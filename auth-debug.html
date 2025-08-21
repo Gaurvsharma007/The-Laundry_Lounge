@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Debug Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h1 {
+            color: #3dbdbd;
+            border-bottom: 2px solid #3dbdbd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3dbdbd;
+            margin-top: 30px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        button {
+            background-color: #3dbdbd;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #299f9f;
+        }
+        .card {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        input {
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .warning-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Debug Tool</h1>
+    
+    <div class="info-box">
+        <h3>What This Tool Does</h3>
+        <p>This page helps diagnose issues with the authentication system. It provides tools to:</p>
+        <ul>
+            <li>Test browser localStorage capabilities</li>
+            <li>View current stored users</li>
+            <li>Force create a demo user</li>
+            <li>Clear all authentication data</li>
+            <li>Test direct login without UI</li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Browser Compatibility Test</h2>
+        <p>This tests if your browser supports localStorage, which is required for authentication.</p>
+        <button id="test-storage">Test localStorage</button>
+        <div id="storage-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Current Authentication State</h2>
+        <button id="check-auth-state">Check Authentication State</button>
+        <div id="auth-state-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Registered Users</h2>
+        <button id="view-users">View Stored Users</button>
+        <button id="create-demo-user">Create Demo User</button>
+        <pre id="users-display" style="display: none;"></pre>
+    </div>
+    
+    <div class="card">
+        <h2>Direct Login Test</h2>
+        <div class="form-group">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" value="demo@example.com">
+        </div>
+        <div class="form-group">
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" value="password">
+        </div>
+        <button id="test-login">Test Login</button>
+        <div id="login-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Reset Authentication</h2>
+        <p>Warning: This will clear all users and login sessions.</p>
+        <button id="clear-all">Clear All Authentication Data</button>
+        <div id="clear-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Authentication Files Status</h2>
+        <button id="check-files">Check Authentication Files</button>
+        <div id="files-result" class="result" style="display: none;"></div>
+    </div>
+    
+    <div class="warning-box">
+        <h3>After Debugging</h3>
+        <p>Once you've fixed the issue, here are links to the main pages:</p>
+        <p>
+            <a href="simple-auth-demo.html">Authentication Demo Page</a> | 
+            <a href="auth-solution.html">Authentication Documentation</a>
+        </p>
+    </div>
+    
+    <script src="simple-auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Test localStorage functionality
+            document.getElementById('test-storage').addEventListener('click', function() {
+                const resultElement = document.getElementById('storage-result');
+                resultElement.style.display = 'block';
+                
+                try {
+                    const testKey = '__test_storage__';
+                    const testValue = 'test-' + Date.now();
+                    
+                    // Try to store data
+                    localStorage.setItem(testKey, testValue);
+                    
+                    // Try to retrieve data
+                    const retrievedValue = localStorage.getItem(testKey);
+                    
+                    // Clean up
+                    localStorage.removeItem(testKey);
+                    
+                    if (retrievedValue === testValue) {
+                        resultElement.textContent = 'SUCCESS: localStorage is working correctly on your browser.';
+                        resultElement.className = 'result';
+                    } else {
+                        resultElement.textContent = 'ERROR: localStorage is available but not storing/retrieving values correctly.';
+                        resultElement.className = 'result error';
+                    }
+                } catch (error) {
+                    resultElement.textContent = 'ERROR: localStorage is not available: ' + error.message;
+                    resultElement.className = 'result error';
+                }
+            });
+            
+            // Check authentication state
+            document.getElementById('check-auth-state').addEventListener('click', function() {
+                const resultElement = document.getElementById('auth-state-result');
+                resultElement.style.display = 'block';
+                
+                try {
+                    const isLoggedIn = SimpleAuth.isLoggedIn();
+                    const currentUser = SimpleAuth.getCurrentUser();
+                    
+                    if (isLoggedIn && currentUser) {
+                        resultElement.textContent = `Currently logged in as: ${currentUser.firstName} ${currentUser.lastName} (${currentUser.email})`;
+                        resultElement.className = 'result';
+                    } else {
+                        resultElement.textContent = 'Not currently logged in.';
+                        resultElement.className = 'result';
+                    }
+                } catch (error) {
+                    resultElement.textContent = 'Error checking authentication state: ' + error.message;
+                    resultElement.className = 'result error';
+                }
+            });
+            
+            // View stored users
+            document.getElementById('view-users').addEventListener('click', function() {
+                const usersDisplay = document.getElementById('users-display');
+                
+                try {
+                    const usersData = localStorage.getItem('laundryUsers');
+                    
+                    if (usersData) {
+                        try {
+                            const users = JSON.parse(usersData);
+                            
+                            // Create a sanitized version (without passwords)
+                            const sanitizedUsers = users.map(user => {
+                                const { password, ...rest } = user;
+                                return {
+                                    ...rest,
+                                    passwordLength: password ? password.length : 0
+                                };
+                            });
+                            
+                            usersDisplay.textContent = JSON.stringify(sanitizedUsers, null, 2);
+                            usersDisplay.style.display = 'block';
+                        } catch (parseError) {
+                            usersDisplay.textContent = 'Error parsing users data: ' + parseError.message;
+                            usersDisplay.style.display = 'block';
+                        }
+                    } else {
+                        usersDisplay.textContent = 'No users found in localStorage.';
+                        usersDisplay.style.display = 'block';
+                    }
+                } catch (error) {
+                    usersDisplay.textContent = 'Error retrieving users: ' + error.message;
+                    usersDisplay.style.display = 'block';
+                }
+            });
+            
+            // Create demo user
+            document.getElementById('create-demo-user').addEventListener('click', function() {
+                const usersDisplay = document.getElementById('users-display');
+                
+                try {
+                    // Get current users
+                    let users = [];
+                    try {
+                        const usersData = localStorage.getItem('laundryUsers');
+                        if (usersData) {
+                            users = JSON.parse(usersData);
+                        }
+                    } catch (e) {
+                        // Start with empty array if error
+                        users = [];
+                    }
+                    
+                    // Remove any existing demo user
+                    users = users.filter(user => user.email !== 'demo@example.com');
+                    
+                    // Create a simple hash function
+                    function simpleHash(str) {
+                        let hash = 0;
+                        for (let i = 0; i < str.length; i++) {
+                            const char = str.charCodeAt(i);
+                            hash = ((hash << 5) - hash) + char;
+                            hash = hash & hash;
+                        }
+                        return hash.toString(16);
+                    }
+                    
+                    // Add demo user
+                    const demoUser = {
+                        id: '1',
+                        firstName: 'Demo',
+                        lastName: 'User',
+                        email: 'demo@example.com',
+                        phone: '1234567890',
+                        password: simpleHash('password'),
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    users.push(demoUser);
+                    
+                    // Save to localStorage
+                    localStorage.setItem('laundryUsers', JSON.stringify(users));
+                    
+                    // Show success message
+                    usersDisplay.textContent = 'Demo user created successfully!\n\nEmail: demo@example.com\nPassword: password\n\nYou can now try logging in.';
+                    usersDisplay.style.display = 'block';
+                } catch (error) {
+                    usersDisplay.textContent = 'Error creating demo user: ' + error.message;
+                    usersDisplay.style.display = 'block';
+                }
+            });
+            
+            // Test login
+            document.getElementById('test-login').addEventListener('click', function() {
+                const resultElement = document.getElementById('login-result');
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                resultElement.style.display = 'block';
+                
+                try {
+                    // Get all users first to see if the user exists
+                    let foundUser = false;
+                    try {
+                        const usersData = localStorage.getItem('laundryUsers');
+                        if (usersData) {
+                            const users = JSON.parse(usersData);
+                            foundUser = users.some(user => user.email === email);
+                        }
+                    } catch (e) {
+                        // Ignore error
+                    }
+                    
+                    // Attempt login
+                    console.log('Attempting login with:', email, password);
+                    
+                    const result = SimpleAuth.login({
+                        email,
+                        password
+                    });
+                    
+                    console.log('Login result:', result);
+                    
+                    if (result.success) {
+                        resultElement.textContent = 'Login successful! You are now logged in.';
+                        resultElement.className = 'result';
+                    } else {
+                        let message = result.message;
+                        
+                        // Add debugging information
+                        if (!foundUser) {
+                            message += ' (User not found in localStorage)';
+                        }
+                        
+                        resultElement.textContent = 'Login failed: ' + message;
+                        resultElement.className = 'result error';
+                    }
+                } catch (error) {
+                    resultElement.textContent = 'Error during login: ' + error.message;
+                    resultElement.className = 'result error';
+                    console.error('Login error details:', error);
+                }
+            });
+            
+            // Clear all authentication data
+            document.getElementById('clear-all').addEventListener('click', function() {
+                const resultElement = document.getElementById('clear-result');
+                
+                try {
+                    localStorage.removeItem('laundryUsers');
+                    localStorage.removeItem('userSession');
+                    
+                    resultElement.textContent = 'All authentication data cleared successfully.';
+                    resultElement.style.display = 'block';
+                    resultElement.className = 'result';
+                } catch (error) {
+                    resultElement.textContent = 'Error clearing data: ' + error.message;
+                    resultElement.style.display = 'block';
+                    resultElement.className = 'result error';
+                }
+            });
+            
+            // Check authentication files
+            document.getElementById('check-files').addEventListener('click', function() {
+                const resultElement = document.getElementById('files-result');
+                
+                resultElement.innerHTML = '';
+                resultElement.style.display = 'block';
+                
+                // Check for simple-auth.js
+                let simpleAuthLoaded = false;
+                try {
+                    if (typeof SimpleAuth === 'object') {
+                        const methods = ['register', 'login', 'logout', 'getCurrentUser', 'isLoggedIn'];
+                        const missingMethods = methods.filter(method => typeof SimpleAuth[method] !== 'function');
+                        
+                        if (missingMethods.length === 0) {
+                            resultElement.innerHTML += '<p>✅ simple-auth.js: Loaded and all methods are available</p>';
+                            simpleAuthLoaded = true;
+                        } else {
+                            resultElement.innerHTML += `<p>⚠️ simple-auth.js: Loaded but missing methods: ${missingMethods.join(', ')}</p>`;
+                        }
+                    } else {
+                        resultElement.innerHTML += '<p>❌ simple-auth.js: Not loaded properly</p>';
+                    }
+                } catch (error) {
+                    resultElement.innerHTML += '<p>❌ simple-auth.js: Error checking: ' + error.message + '</p>';
+                }
+                
+                // Overall assessment
+                if (simpleAuthLoaded) {
+                    resultElement.innerHTML += '<p><strong>Authentication files appear to be working correctly.</strong></p>';
+                    resultElement.className = 'result';
+                } else {
+                    resultElement.innerHTML += '<p><strong>Issues detected with authentication files. Try reloading the page or checking for JavaScript errors in the console.</strong></p>';
+                    resultElement.className = 'result error';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

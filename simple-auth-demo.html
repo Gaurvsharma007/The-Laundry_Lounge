@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Auth Demo - FreshThreads</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        
+        h1 {
+            color: #3dbdbd;
+            border-bottom: 2px solid #3dbdbd;
+            padding-bottom: 10px;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-field {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #3dbdbd;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #299f9f;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            display: none;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .user-info {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .user-info h3 {
+            margin-top: 0;
+            color: #3dbdbd;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Auth Demo - FreshThreads</h1>
+    
+    <p>This is a demonstration of the client-side authentication system. You can register, login, and view user information without needing a server.</p>
+    
+    <div class="container">
+        <!-- Registration Form -->
+        <div class="card" id="registration-card">
+            <h2>Register</h2>
+            <form id="register-form">
+                <div class="form-field">
+                    <label for="reg-firstName">First Name</label>
+                    <input type="text" id="reg-firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="reg-lastName">Last Name</label>
+                    <input type="text" id="reg-lastName" name="lastName" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" name="email" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="reg-phone">Phone</label>
+                    <input type="tel" id="reg-phone" name="phone" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" name="password" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="reg-confirmPassword">Confirm Password</label>
+                    <input type="password" id="reg-confirmPassword" name="confirmPassword" required>
+                </div>
+                
+                <button type="submit">Register</button>
+            </form>
+            
+            <div class="result" id="register-result"></div>
+        </div>
+        
+        <!-- Login Form -->
+        <div class="card" id="login-card">
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-field">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required>
+                </div>
+                
+                <div class="form-field">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                
+                <button type="submit" id="login-button">Login</button>
+            </form>
+            
+            <div class="result" id="login-result"></div>
+            
+            <p>Demo user: demo@example.com / password</p>
+            
+            <!-- Direct login button for fallback -->
+            <button id="direct-login" style="margin-top: 20px; background-color: #ff9800;">
+                Try Direct Login (if form submit doesn't work)
+            </button>
+        </div>
+    </div>
+    
+    <!-- User Information (shown when logged in) -->
+    <div class="card hidden" id="user-info-card">
+        <h2>Welcome, <span id="user-name">User</span>!</h2>
+        
+        <div class="user-info">
+            <h3>User Profile</h3>
+            <p><strong>Name:</strong> <span id="profile-name"></span></p>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Phone:</strong> <span id="profile-phone"></span></p>
+            <p><strong>Member Since:</strong> <span id="profile-date"></span></p>
+        </div>
+        
+        <button id="logout-button" style="margin-top: 20px;">Logout</button>
+    </div>
+    
+    <script src="simple-auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event handlers');
+            
+            // Elements
+            const registerForm = document.getElementById('register-form');
+            const loginForm = document.getElementById('login-form');
+            const loginButton = document.getElementById('login-button');
+            const directLoginButton = document.getElementById('direct-login');
+            const registerResult = document.getElementById('register-result');
+            const loginResult = document.getElementById('login-result');
+            const registrationCard = document.getElementById('registration-card');
+            const loginCard = document.getElementById('login-card');
+            const userInfoCard = document.getElementById('user-info-card');
+            const logoutButton = document.getElementById('logout-button');
+            
+            // Check if elements are found
+            console.log('Login form found:', !!loginForm);
+            console.log('Login button found:', !!loginButton);
+            console.log('Direct login button found:', !!directLoginButton);
+            
+            // Check if browser supports localStorage
+            function checkBrowserSupport() {
+                try {
+                    const test = 'test';
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch (e) {
+                    showResult(loginResult, 'Your browser does not support localStorage, which is required for authentication.', true);
+                    return false;
+                }
+            }
+            
+            // Check browser support on load
+            if (!checkBrowserSupport()) {
+                return;
+            }
+            
+            // Check if user is already logged in
+            updateAuthUI();
+            
+            // Function to handle login
+            function handleLogin(e) {
+                if (e) e.preventDefault();
+                console.log('Login function triggered');
+                
+                // Get form values
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                console.log('Login values:', email, password ? '(password provided)' : '(no password)');
+                
+                if (!email || !password) {
+                    showResult(loginResult, 'Please enter both email and password', true);
+                    return;
+                }
+                
+                try {
+                    console.log('Attempting login with:', email);
+                    
+                    // Login user
+                    const result = SimpleAuth.login({
+                        email,
+                        password
+                    });
+                    
+                    console.log('Login result:', result);
+                    
+                    if (result.success) {
+                        showResult(loginResult, 'Login successful!', false);
+                        if (loginForm) loginForm.reset();
+                        
+                        // Update UI
+                        updateAuthUI();
+                    } else {
+                        showResult(loginResult, result.message, true);
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showResult(loginResult, 'An error occurred during login: ' + error.message, true);
+                }
+            }
+            
+            // Registration form submission
+            if (registerForm) {
+                registerForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Register form submitted');
+                    
+                    // Get form values
+                    const firstName = document.getElementById('reg-firstName').value;
+                    const lastName = document.getElementById('reg-lastName').value;
+                    const email = document.getElementById('reg-email').value;
+                    const phone = document.getElementById('reg-phone').value;
+                    const password = document.getElementById('reg-password').value;
+                    const confirmPassword = document.getElementById('reg-confirmPassword').value;
+                    
+                    // Validate passwords match
+                    if (password !== confirmPassword) {
+                        showResult(registerResult, 'Passwords do not match', true);
+                        return;
+                    }
+                    
+                    try {
+                        // Register user
+                        const result = SimpleAuth.register({
+                            firstName,
+                            lastName,
+                            email,
+                            phone,
+                            password
+                        });
+                        
+                        if (result.success) {
+                            showResult(registerResult, 'Registration successful! You can now log in.', false);
+                            registerForm.reset();
+                        } else {
+                            showResult(registerResult, result.message, true);
+                        }
+                    } catch (error) {
+                        console.error('Registration error:', error);
+                        showResult(registerResult, 'An error occurred during registration: ' + error.message, true);
+                    }
+                });
+            } else {
+                console.warn('Register form not found');
+            }
+            
+            // Login form submission
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    console.log('Login form submitted');
+                    handleLogin(e);
+                });
+            } else {
+                console.warn('Login form not found');
+            }
+            
+            // Direct login button click
+            if (directLoginButton) {
+                directLoginButton.addEventListener('click', function() {
+                    console.log('Direct login button clicked');
+                    handleLogin();
+                });
+            }
+            
+            // Also add click handler directly to the login button
+            if (loginButton) {
+                loginButton.addEventListener('click', function(e) {
+                    console.log('Login button clicked directly');
+                    handleLogin(e);
+                });
+            }
+            
+            // Logout button
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    try {
+                        SimpleAuth.logout();
+                        updateAuthUI();
+                    } catch (error) {
+                        console.error('Logout error:', error);
+                        alert('An error occurred during logout: ' + error.message);
+                    }
+                });
+            } else {
+                console.warn('Logout button not found');
+            }
+            
+            // Helper function to show result message
+            function showResult(element, message, isError) {
+                if (!element) {
+                    console.warn('Result element not found for message:', message);
+                    alert(message);
+                    return;
+                }
+                
+                element.textContent = message;
+                element.style.display = 'block';
+                
+                if (isError) {
+                    element.classList.add('error');
+                } else {
+                    element.classList.remove('error');
+                }
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+            
+            // Update UI based on authentication state
+            function updateAuthUI() {
+                try {
+                    const isLoggedIn = SimpleAuth.isLoggedIn();
+                    const currentUser = SimpleAuth.getCurrentUser();
+                    
+                    console.log('Auth state:', isLoggedIn ? 'logged in' : 'logged out');
+                    if (currentUser) {
+                        console.log('Current user:', currentUser.email);
+                    }
+                    
+                    if (isLoggedIn && currentUser) {
+                        // Hide login/register forms
+                        if (registrationCard) registrationCard.classList.add('hidden');
+                        if (loginCard) loginCard.classList.add('hidden');
+                        
+                        // Show user info
+                        if (userInfoCard) userInfoCard.classList.remove('hidden');
+                        
+                        // Update user info
+                        const userNameElement = document.getElementById('user-name');
+                        const profileNameElement = document.getElementById('profile-name');
+                        const profileEmailElement = document.getElementById('profile-email');
+                        const profilePhoneElement = document.getElementById('profile-phone');
+                        const profileDateElement = document.getElementById('profile-date');
+                        
+                        if (userNameElement) userNameElement.textContent = currentUser.firstName;
+                        if (profileNameElement) profileNameElement.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                        if (profileEmailElement) profileEmailElement.textContent = currentUser.email;
+                        if (profilePhoneElement) profilePhoneElement.textContent = currentUser.phone;
+                        
+                        // Format date
+                        if (currentUser.createdAt && profileDateElement) {
+                            const createdDate = new Date(currentUser.createdAt);
+                            profileDateElement.textContent = createdDate.toLocaleDateString();
+                        } else if (profileDateElement) {
+                            profileDateElement.textContent = 'Unknown';
+                        }
+                    } else {
+                        // Show login/register forms
+                        if (registrationCard) registrationCard.classList.remove('hidden');
+                        if (loginCard) loginCard.classList.remove('hidden');
+                        
+                        // Hide user info
+                        if (userInfoCard) userInfoCard.classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error('UI update error:', error);
+                    const loginElement = document.getElementById('login-result');
+                    if (loginElement) {
+                        showResult(loginElement, 'An error occurred while updating the UI: ' + error.message, true);
+                    } else {
+                        alert('UI update error: ' + error.message);
+                    }
+                }
+            }
+            
+            console.log('Event handlers set up complete');
+        });
+    </script>
+</body>
+</html> 

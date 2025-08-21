@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Login</title>
+    <script src="simple-auth.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #3dbdbd;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3dbdbd;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #299f9f;
+        }
+        .error {
+            color: red;
+            margin-top: 15px;
+            display: none;
+        }
+        .success {
+            color: green;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>FreshThreads Login</h1>
+    
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit">Login</button>
+    </form>
+    
+    <div id="errorMessage" class="error"></div>
+    <div id="successMessage" class="success"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            if (typeof SimpleAuth !== 'undefined' && SimpleAuth.isLoggedIn()) {
+                window.location.href = 'laundary.html';
+            }
+            
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Clear messages
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+                
+                // Get form values
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                console.log('Login attempt with email:', email);
+                
+                // Validate
+                if (!email || !password) {
+                    showError('Please enter both email and password');
+                    return;
+                }
+                
+                // Attempt login
+                if (typeof SimpleAuth !== 'undefined') {
+                    try {
+                        const result = SimpleAuth.login({
+                            email: email,
+                            password: password
+                        });
+                        
+                        console.log('Login result:', result);
+                        
+                        if (result.success) {
+                            showSuccess('Login successful! Redirecting...');
+                            
+                            // Redirect after a short delay
+                            setTimeout(function() {
+                                window.location.href = 'laundary.html';
+                            }, 1500);
+                        } else {
+                            showError(result.message || 'Login failed');
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        showError('An error occurred: ' + error.message);
+                    }
+                } else {
+                    showError('Authentication system not available');
+                }
+            });
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

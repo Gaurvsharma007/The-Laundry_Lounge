@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sustainable Laundry - Our Commitment to SDGs</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #34a853;
+      --accent: #00c4b4;
+      --light: #f8f9fa;
+      --dark: #202124;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --border-radius: 12px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    /* Enhanced navbar styles */
+    .navbar {
+      background: transparent;
+      transition: all 0.4s ease;
+      padding: 1rem 2rem;
+      z-index: 1000;
+      position: fixed;
+      width: 100%;
+      top: 0;
+    }
+    
+    .navbar.scrolled {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.95), rgba(26, 82, 118, 0.95));
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      padding: 0.7rem 2rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .navbar-brand img {
+      height: 40px;
+      width: auto;
+      transition: var(--transition);
+    }
+    
+    .navbar-brand span {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: -0.5px;
+    }
+    
+    .navbar .nav-link {
+      color: white !important;
+      font-weight: 500;
+      position: relative;
+      padding: 0.5rem 1rem;
+      margin: 0 0.2rem;
+      transition: var(--transition);
+    }
+    
+    .navbar .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: white;
+      transition: var(--transition);
+      opacity: 0;
+    }
+    
+    .navbar .nav-link:hover::after,
+    .navbar .nav-link.active::after {
+      width: 70%;
+      opacity: 1;
+    }
+    
+    .navbar .nav-link:hover {
+      transform: translateY(-3px);
+    }
+    
+    .navbar .nav-link.active {
+      font-weight: 700;
+      color: white !important;
+    }
+    
+    /* Enhanced header styling */
+    header {
+      background: linear-gradient(to right, #3498db, #1a5276);
+      color: white;
+      text-align: center;
+      padding: 8rem 1rem 6rem;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 4rem;
+    }
+    
+    .header-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .particle {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-500px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      animation: fadeIn 1.2s ease-out;
+    }
+    
+    .header-logo {
+      margin-bottom: 3rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .sdg-wheel-logo {
+      width: 200px;
+      height: 200px;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+      animation: rotateSlow 60s linear infinite;
+      transition: transform 0.5s ease;
+    }
+    
+    .sdg-wheel-logo:hover {
+      transform: scale(1.1) rotate(10deg);
+    }
+    
+    .header-content h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      font-family: 'Montserrat', sans-serif;
+      animation: fadeInUp 1s ease-out;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .header-content h1::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+    }
+    
+    .header-content p {
+      font-size: 1.4rem;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 1.5rem auto 0;
+      line-height: 1.6;
+      animation: fadeInUp 1.2s ease-out 0.3s backwards;
+    }
+    
+    .header-cta {
+      margin-top: 2.5rem;
+      animation: fadeInUp 1.4s ease-out 0.6s backwards;
+    }
+    
+    .header-btn {
+      display: inline-block;
+      background-color: white;
+      color: var(--primary-dark);
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 1.1rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .header-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      color: var(--primary);
+    }
+    
+    .header-scroll {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce 2s infinite;
+      z-index: 2;
+      cursor: pointer;
+    }
+    
+    .header-scroll i {
+      color: white;
+      font-size: 2rem;
+      opacity: 0.7;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) translateX(-50%);
+      }
+      40% {
+        transform: translateY(-20px) translateX(-50%);
+      }
+      60% {
+        transform: translateY(-10px) translateX(-50%);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Wave divider at bottom of header */
+    .wave-divider {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+    }
+    
+    .wave-divider svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 80px;
+    }
+    
+    .wave-divider .shape-fill {
+      fill: var(--light);
+    }
+    
+    .water-drops {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.1;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23ffffff" d="M30,50 C30,44.5 20,35 20,25 C20,12.5 40,12.5 40,25 C40,35 30,44.5 30,50 Z M70,75 C70,69.5 60,60 60,50 C60,37.5 80,37.5 80,50 C80,60 70,69.5 70,75 Z M50,90 C50,84.5 40,75 40,65 C40,52.5 60,52.5 60,65 C60,75 50,84.5 50,90 Z"></path></svg>');
+      background-size: 100px 100px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .intro {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    
+    .intro h2 {
+      color: var(--primary-dark);
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .intro h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: 10px;
+    }
+    
+    .intro-content {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      margin-top: 3rem;
+      align-items: center;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    
+    .intro-text {
+      text-align: left;
+      padding: 2.5rem;
+    }
+    
+    .intro-text p {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #444;
+    }
+    
+    .intro-text p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .intro-image {
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    
+    .intro-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.8s ease;
+    }
+    
+    .intro-image:hover .intro-img {
+      transform: scale(1.05);
+    }
+    
+    .sdg-goals {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+    
+    .sdg-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .sdg-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .sdg-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .sdg-card:hover::before {
+      opacity: 1;
+    }
+    
+    .sdg-image {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sdg-image::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30%;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0));
+      z-index: 1;
+    }
+    
+    .sdg-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s ease;
+    }
+    
+    .sdg-card:hover .sdg-image img {
+      transform: scale(1.1);
+    }
+    
+    .sdg-content {
+      padding: 1.8rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sdg-number {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: var(--primary);
+      color: white;
+      font-weight: bold;
+      padding: 0.4rem 0.9rem;
+      border-radius: 30px;
+      display: inline-block;
+      z-index: 2;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .sdg-title {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .sdg-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: 10px;
+    }
+    
+    .sdg-description {
+      color: #555;
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+    
+    .sdg-actions {
+      margin-top: auto;
+    }
+    
+    .sdg-actions h4 {
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .sdg-actions h4::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%233498db' d='M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+    
+    .cta-section {
+      margin: 6rem 0 3rem;
+      padding: 0;
+      background: transparent;
+      position: relative;
+    }
+    
+    .cta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 3rem;
+      align-items: center;
+      background: linear-gradient(135deg, #3498db, #1a5276);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      color: white;
+    }
+    
+    .cta-image {
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+    
+    .cta-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.8s ease;
+    }
+    
+    .cta-image:hover .cta-img {
+      transform: scale(1.05);
+    }
+    
+    .cta-content {
+      padding: 3rem;
+    }
+    
+    .cta-section h2 {
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .cta-section p {
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+      font-size: 1.1rem;
+    }
+    
+    .cta-button {
+      background-color: white;
+      color: var(--primary-dark);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      color: var(--primary);
+    }
+    
+    .cta-button.secondary {
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+    }
+    
+    .cta-button.secondary:hover {
+      background-color: white;
+      color: var(--primary);
+    }
+    
+    footer {
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 4rem 1rem;
+      margin-top: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+    }
+    
+    footer p {
+      opacity: 0.8;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .footer-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .footer-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    
+    .footer-wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      transform: rotate(180deg);
+    }
+    
+    .footer-wave svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 150px;
+    }
+    
+    .footer-wave .shape-fill {
+      fill: rgba(255, 255, 255, 0.03);
+    }
+    
+    .header-logo {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .sdg-wheel-logo {
+      width: 150px;
+      height: 150px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      animation: rotate 60s linear infinite;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .cta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .cta-image {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .cta-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    
+    .cta-image:hover .cta-img {
+      transform: scale(1.05);
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    
+    .cta-button.secondary {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .cta-button.secondary:hover {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .intro-content {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+      align-items: center;
+    }
+    
+    .intro-text {
+      text-align: left;
+    }
+    
+    .intro-text p {
+      margin-bottom: 1rem;
+    }
+    
+    .intro-image {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .intro-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    
+    .intro-image:hover .intro-img {
+      transform: scale(1.05);
+    }
+    
+    @media (max-width: 992px) {
+      .header-content h1 {
+        font-size: 2.5rem;
+      }
+      
+      .sdg-wheel-logo {
+        width: 150px;
+        height: 150px;
+      }
+      
+      .intro-content,
+      .cta-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .intro-image {
+        order: -1;
+        height: 300px;
+      }
+      
+      .intro-text {
+        padding: 2rem;
+      }
+      
+      .cta-content {
+        padding: 2.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header-content h1 {
+        font-size: 2rem;
+      }
+      
+      .header-content p {
+        font-size: 1.1rem;
+      }
+      
+      .sdg-goals {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .cta-button {
+        width: 100%;
+        text-align: center;
+      }
+      
+      .intro h2,
+      .cta-section h2 {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .header-content h1 {
+        font-size: 1.8rem;
+      }
+      
+      .sdg-wheel-logo {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .intro-text p,
+      .cta-section p {
+        font-size: 1rem;
+      }
+    }
+    
+    /* Enhancement: Added custom scrollbar */
+    body::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    body::-webkit-scrollbar-track {
+      background: var(--light);
+    }
+    
+    body::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 20px;
+    }
+    
+    .action-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .action-list li {
+      position: relative;
+      padding-left: 1.8rem;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: flex-start;
+      transition: transform 0.2s ease;
+    }
+    
+    .action-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 18px;
+      height: 18px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%2334a853' d='M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    
+    .action-list li:hover {
+      transform: translateX(5px);
+    }
+    
+    /* Enhanced water drops background */
+    .water-drops {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.15;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23ffffff" d="M30,50 C30,44.5 20,35 20,25 C20,12.5 40,12.5 40,25 C40,35 30,44.5 30,50 Z M70,75 C70,69.5 60,60 60,50 C60,37.5 80,37.5 80,50 C80,60 70,69.5 70,75 Z M50,90 C50,84.5 40,75 40,65 C40,52.5 60,52.5 60,65 C60,75 50,84.5 50,90 Z"></path></svg>');
+      background-size: 120px 120px;
+      animation: dropShimmer 80s linear infinite;
+    }
+    
+    @keyframes dropShimmer {
+      0% { background-position: 0 0; }
+      100% { background-position: 500px 500px; }
+    }
+    
+    /* Enhanced header styling */
+    .header-logo {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .sdg-wheel-logo {
+      width: 180px;
+      height: 180px;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+      animation: rotateSlow 60s linear infinite;
+      transition: transform 0.5s ease;
+    }
+    
+    .sdg-wheel-logo:hover {
+      transform: scale(1.1);
+    }
+    
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .header-content h1 {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease-out;
+    }
+    
+    .header-content p {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+      animation: fadeIn 1.2s ease-out 0.3s backwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Page Loader */
+    .page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .loader-icon {
+      width: 80px;
+      height: 80px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite, pulse 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
+      100% { box-shadow: 0 0 20px rgba(52, 152, 219, 0.6); }
+    }
+    
+    /* Animations for content */
+    .animated {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    .animated.fadeIn {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Delay sequence for cards */
+    .sdg-card:nth-child(1) { transition-delay: 0.1s; }
+    .sdg-card:nth-child(2) { transition-delay: 0.2s; }
+    .sdg-card:nth-child(3) { transition-delay: 0.3s; }
+    .sdg-card:nth-child(4) { transition-delay: 0.4s; }
+    .sdg-card:nth-child(5) { transition-delay: 0.5s; }
+    .sdg-card:nth-child(6) { transition-delay: 0.6s; }
+    
+    /* Progress bar at top of page */
+    .progress-container {
+      position: fixed;
+      top: 0;
+      z-index: 1500;
+      width: 100%;
+      height: 5px;
+      background: transparent;
+    }
+    
+    .progress-bar {
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      width: 0%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Additional Effects */
+    .zoom-hover {
+      overflow: hidden;
+    }
+    
+    .zoom-hover img {
+      transition: transform 0.5s ease;
+    }
+    
+    .zoom-hover:hover img {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <!-- Page Loader -->
+  <div class="page-loader">
+    <div class="loader-icon"></div>
+  </div>
+  
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Enhanced Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="laundary.html">
+        <img src="https://cdn-icons-png.flaticon.com/512/2975/2975175.png" alt="TheLaundryLounge Logo">
+        <span>TheLaundryLounge</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="laundary.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="order.html">New Order</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="trackorder.html">Track Order</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="sdg-goals.html">SDG Goals</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="signup.html">Login/Signup</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Enhanced Header -->
+  <header id="header">
+    <div class="header-particles" id="particles"></div>
+    <div class="water-drops"></div>
+    <div class="header-content">
+      <div class="header-logo">
+        <img src="https://sdgs.un.org/sites/default/files/2020-07/SDG%20Wheel_WEB.png" alt="SDG Goals Wheel" class="sdg-wheel-logo">
+      </div>
+      <h1>Our Commitment to Sustainability</h1>
+      <p>How our laundry service is contributing to the UN Sustainable Development Goals</p>
+      <div class="header-cta">
+        <a href="#sdg-goals" class="header-btn">Explore Our Initiatives</a>
+      </div>
+    </div>
+    <div class="header-scroll" id="scrollDown">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="wave-divider">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+      </svg>
+    </div>
+  </header>
+  
+  <div class="container">
+    <section class="intro animated">
+      <h2>Making a Difference, One Wash at a Time</h2>
+      <div class="intro-content">
+        <div class="intro-text">
+          <p>At Laundry Service, we believe that even small businesses can make a significant impact on global sustainability challenges. We've aligned our operations with relevant UN Sustainable Development Goals to ensure we contribute to a better future while providing exceptional laundry services.</p>
+          <p>Our commitment to sustainability is reflected in everything we do - from our water-efficient machines to our eco-friendly detergents and energy-saving practices. We're proud to be part of the global movement towards a more sustainable future.</p>
+        </div>
+        <div class="intro-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Sustainable Laundry" class="intro-img">
+        </div>
+      </div>
+    </section>
+    
+    <section class="sdg-goals" id="sdg-goals">
+      <!-- SDG 6: Clean Water and Sanitation -->
+      <div class="sdg-card animated">
+        <div class="sdg-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1562016600-ece13e8ba570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1776&q=80" alt="Clean Water and Sanitation">
+        </div>
+        <span class="sdg-number">SDG 6</span>
+        <div class="sdg-content">
+          <h3 class="sdg-title">Clean Water and Sanitation</h3>
+          <p class="sdg-description">We're committed to responsible water usage and preventing water pollution in our laundry operations.</p>
+          <div class="sdg-actions">
+            <h4>Our Initiatives:</h4>
+            <ul class="action-list">
+              <li>Water-efficient washing machines that reduce water usage by up to 40%</li>
+              <li>Eco-friendly detergents that minimize water pollution</li>
+              <li>Greywater recycling systems for landscaping and non-potable uses</li>
+              <li>Regular maintenance to prevent leaks and water waste</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDG 7: Affordable and Clean Energy -->
+      <div class="sdg-card animated">
+        <div class="sdg-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Affordable and Clean Energy">
+        </div>
+        <span class="sdg-number">SDG 7</span>
+        <div class="sdg-content">
+          <h3 class="sdg-title">Affordable and Clean Energy</h3>
+          <p class="sdg-description">We're reducing our carbon footprint by transitioning to renewable energy sources and improving energy efficiency.</p>
+          <div class="sdg-actions">
+            <h4>Our Initiatives:</h4>
+            <ul class="action-list">
+              <li>Solar panels installed on our facility roof providing 40% of our energy needs</li>
+              <li>Energy-efficient washers and dryers with ENERGY STAR certification</li>
+              <li>LED lighting throughout our facilities</li>
+              <li>Off-peak energy usage scheduling when possible</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDG 12: Responsible Consumption and Production -->
+      <div class="sdg-card animated">
+        <div class="sdg-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1605600659853-4246176d3442?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1776&q=80" alt="Responsible Consumption and Production">
+        </div>
+        <span class="sdg-number">SDG 12</span>
+        <div class="sdg-content">
+          <h3 class="sdg-title">Responsible Consumption</h3>
+          <p class="sdg-description">We prioritize sustainability in our supply chain and operations to minimize waste and environmental impact.</p>
+          <div class="sdg-actions">
+            <h4>Our Initiatives:</h4>
+            <ul class="action-list">
+              <li>Biodegradable packaging and laundry bags</li>
+              <li>Bulk purchasing to reduce packaging waste</li>
+              <li>Reusable garment bags for customers</li>
+              <li>Eco-certified cleaning products and detergents</li>
+              <li>Repair services to extend clothing lifespan</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDG 13: Climate Action -->
+      <div class="sdg-card animated">
+        <div class="sdg-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Climate Action">
+        </div>
+        <span class="sdg-number">SDG 13</span>
+        <div class="sdg-content">
+          <h3 class="sdg-title">Climate Action</h3>
+          <p class="sdg-description">We're taking urgent action to combat climate change by reducing our greenhouse gas emissions.</p>
+          <div class="sdg-actions">
+            <h4>Our Initiatives:</h4>
+            <ul class="action-list">
+              <li>Carbon offsetting program for delivery vehicles</li>
+              <li>Low-temperature washing options that reduce energy usage</li>
+              <li>Heat recovery systems on dryers</li>
+              <li>Annual carbon footprint assessment and reduction goals</li>
+              <li>Employee education on climate-friendly practices</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDG 8: Decent Work and Economic Growth -->
+      <div class="sdg-card animated">
+        <div class="sdg-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1533749047139-189de3cf06d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1746&q=80" alt="Decent Work and Economic Growth">
+        </div>
+        <span class="sdg-number">SDG 8</span>
+        <div class="sdg-content">
+          <h3 class="sdg-title">Decent Work & Growth</h3>
+          <p class="sdg-description">We provide fair employment opportunities and promote sustainable economic growth in our community.</p>
+          <div class="sdg-actions">
+            <h4>Our Initiatives:</h4>
+            <ul class="action-list">
+              <li>Living wage for all employees</li>
+              <li>Skills development and training programs</li>
+              <li>Safe and healthy working conditions</li>
+              <li>Local hiring practices to support community development</li>
+              <li>Partnerships with local businesses and suppliers</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SDG 11: Sustainable Cities and Communities -->
+      <div class="sdg-card animated">
+        <div class="sdg-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1498354178607-a79df2916198?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1738&q=80" alt="Sustainable Cities and Communities">
+        </div>
+        <span class="sdg-number">SDG 11</span>
+        <div class="sdg-content">
+          <h3 class="sdg-title">Sustainable Communities</h3>
+          <p class="sdg-description">We contribute to making our cities more inclusive, safe, resilient, and sustainable.</p>
+          <div class="sdg-actions">
+            <h4>Our Initiatives:</h4>
+            <ul class="action-list">
+              <li>Electric delivery vehicles to reduce urban air pollution</li>
+              <li>Neighborhood collection points to minimize transportation</li>
+              <li>Community laundry education programs</li>
+              <li>Support for local environmental initiatives</li>
+              <li>Accessible services for all community members</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="cta-section animated">
+      <div class="cta-grid">
+        <div class="cta-image zoom-hover">
+          <img src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Eco-friendly Laundry" class="cta-img">
+        </div>
+        <div class="cta-content">
+          <h2>Join Our Sustainable Journey</h2>
+          <p>By choosing TheLaundryLounge, you're not just getting clean clothes—you're supporting a business committed to environmental and social responsibility. Together, we can make a difference with every wash.</p>
+          <div class="cta-buttons">
+            <a href="order.html" class="cta-button">Order Our Green Laundry Service</a>
+            <a href="trackorder.html" class="cta-button secondary">Track Your Order</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <footer class="animated">
+    <div class="footer-wave">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+      </svg>
+    </div>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img src="https://sdgs.un.org/sites/default/files/2020-07/SDG%20Wheel_WEB.png" alt="SDG Logo" width="70" height="70">
+      </div>
+      <p>© 2025 TheLaundryLounge | Our Commitment to the UN Sustainable Development Goals</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Page loader
+      const loader = document.querySelector('.page-loader');
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          loader.classList.add('loader-hidden');
+        }, 500);
+      });
+      
+      // Create particle elements for header
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 30;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random size between 5px and 20px
+        const size = Math.random() * 15 + 5;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random position
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        
+        // Random animation duration between 10s and 20s
+        const duration = Math.random() * 10 + 10;
+        particle.style.animationDuration = `${duration}s`;
+        
+        // Random delay
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+      
+      // Navbar scroll effect
+      const navbar = document.getElementById('mainNav');
+      
+      function checkScroll() {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      }
+      
+      // Scroll animation
+      const animatedElements = document.querySelectorAll('.animated');
+      
+      function checkElements() {
+        const triggerBottom = window.innerHeight * 0.8;
+        
+        animatedElements.forEach(element => {
+          const elementTop = element.getBoundingClientRect().top;
+          
+          if (elementTop < triggerBottom) {
+            element.classList.add('fadeIn');
+          }
+        });
+      }
+      
+      // Progress bar
+      function updateProgressBar() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById('progressBar').style.width = scrolled + '%';
+      }
+      
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+      
+      // Handle scroll down button
+      document.getElementById('scrollDown').addEventListener('click', function() {
+        const introSection = document.querySelector('.intro');
+        introSection.scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      // Initial check and event listeners
+      checkScroll();
+      checkElements();
+      updateProgressBar();
+      
+      window.addEventListener('scroll', function() {
+        checkScroll();
+        checkElements();
+        updateProgressBar();
+      });
+    });
+  </script>
+</body>
+</html> 

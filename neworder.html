@@ -1,0 +1,5583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Order - The Laundry Lounge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="orders.js"></script>
+    <!-- React Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Base styles */
+        :root {
+            --primary: #3dbdbd;
+            --primary-dark: #2a9d9d;
+            --primary-light: #c5f1f1;
+            --secondary: #ff6b6b;
+            --accent: #ffd166;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --bg-dark: #edf2f7;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-hover: 0 15px 30px rgba(0,0,0,0.15);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-top: 60px;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Custom navigation styles for the new design */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 12px 30px;
+            font-size: 1em;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1100;
+            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Wavy effect for top bar */
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' fill='%23ffffff' opacity='.25'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        /* Interactive status indicator */
+        .status-indicator {
+            position: absolute;
+            top: 50%;
+            right: 150px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4ade80; /* Green for online */
+            position: relative;
+        }
+        
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(74, 222, 128, 0.3);
+            animation: pulse-status 2s infinite;
+        }
+        
+        @keyframes pulse-status {
+            0%, 100% { transform: scale(0.8); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+        }
+        
+        .contact-info {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .contact-info .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+        
+        .contact-info .info-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .social-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2em;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-icons a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(0);
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-4px) rotate(8deg);
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-icons a:hover::before {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+        
+        /* Main navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 30px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        /* Wave effect for the navigation bar */
+        .nav-wave {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%23C5F1F1' opacity='0.3'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            pointer-events: none;
+        }
+        
+        /* Floating laundry bubbles in the navigation */
+        .nav-bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .nav-bubble {
+            position: absolute;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .nav-bubble:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: -30px;
+            left: 20%;
+            animation: float-nav-bubble 15s infinite ease-in-out;
+        }
+        
+        .nav-bubble:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            bottom: -10px;
+            left: 40%;
+            animation: float-nav-bubble 12s infinite ease-in-out 2s;
+        }
+        
+        .nav-bubble:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            right: 15%;
+            animation: float-nav-bubble 18s infinite ease-in-out 1s;
+        }
+        
+        @keyframes float-nav-bubble {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-15px) translateX(15px); }
+            50% { transform: translateY(10px) translateX(30px); }
+            75% { transform: translateY(15px) translateX(15px); }
+        }
+        
+        nav .logo {
+            display: flex;
+            align-items: center;
+            font-size: 2.2em;
+            font-weight: bold;
+            font-family: 'Brush Script MT', cursive;
+            color: var(--primary-dark);
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+        
+        nav .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        nav .logo img {
+            height: 55px;
+            margin-right: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        nav .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 70%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary) 0%, transparent 100%);
+            border-radius: 3px;
+            z-index: -1;
+        }
+        
+        /* Nav menu */
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        
+        /* The floating menu indicator */
+        .menu-indicator {
+            position: absolute;
+            height: 4px;
+            bottom: -10px;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 8px rgba(61, 189, 189, 0.5);
+            z-index: 5;
+        }
+        
+        /* Shine effect on the logo */
+        .logo-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.6) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-20deg);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -30px; }
+            30%, 100% { left: 100%; }
+        }
+        
+        nav ul li {
+            position: relative;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.9em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        nav ul li a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to top, var(--primary-light) 0%, rgba(255, 255, 255, 0) 100%);
+            transition: height 0.3s ease;
+            z-index: -1;
+        }
+        
+        nav ul li a:hover {
+            color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        nav ul li a:hover::before {
+            height: 100%;
+        }
+        
+        nav ul li a .icon {
+            font-size: 1.2em;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        nav ul li a:hover .icon {
+            transform: translateY(-3px) scale(1.2);
+            color: var(--primary);
+        }
+        
+        nav ul li.active a {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        
+        nav ul li.active a .icon {
+            color: var(--primary);
+        }
+        
+        /* Special treatment for NEW ORDER navigation item since we're on that page */
+        nav ul li:nth-child(2) a {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(61, 189, 189, 0.3);
+        }
+        
+        nav ul li:nth-child(2) a:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(61, 189, 189, 0.4);
+        }
+        
+        nav ul li:nth-child(2) a .icon {
+            color: white;
+        }
+        
+        /* Glowing effect for SIGN IN */
+        nav ul li:last-child a {
+            border: 1px dashed var(--primary-light);
+            animation: pulse-border 2s infinite;
+        }
+        
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--primary-light); }
+            50% { border-color: var(--primary); }
+        }
+        
+        /* Animation for the floating notification */
+        .nav-notification {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--secondary);
+            color: white;
+            font-size: 0.7em;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            animation: pulse-notification 2s infinite;
+        }
+        
+        @keyframes pulse-notification {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+        }
+        
+        .dropdown {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: var(--box-shadow);
+            z-index: 1;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 10px;
+        }
+        
+        .dropdown a {
+            color: var(--text-dark);
+            padding: 12px 16px;
+            display: block;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .dropdown a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        nav ul li:hover .dropdown {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px) translateX(-50%); }
+            to { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+        
+        .icon {
+            margin-right: 8px;
+        }
+        
+        .ordertext {
+            margin-right: 90px;
+        }
+        
+        /* Order form specific styles */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        
+        /* Modern Progress Indicator */
+        .order-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            position: relative;
+            padding: 0 10px;
+        }
+        
+        .order-progress:before {
+            content: '';
+            position: absolute;
+            height: 4px;
+            background-color: #e0e0e0;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            z-index: 1;
+        }
+        
+        .step {
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-color);
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(61, 189, 189, 0.3);
+        }
+        
+        .step.completed {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .step.completed:after {
+            content: '✓';
+            font-size: 24px;
+        }
+        
+        .step-label {
+            position: absolute;
+            top: 100%;
+            margin-top: 15px;
+            text-align: center;
+            width: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        /* Card Styling */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 35px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        /* Service Selection */
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .service-card {
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            background: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow);
+            border-color: rgba(61, 189, 189, 0.3);
+        }
+        
+        .service-card.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(61, 189, 189, 0.15);
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: black;
+            font-size: 24px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        .service-card.selected .service-icon {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(61, 189, 189, 0.3);
+        }
+        
+        .service-title {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+        
+        .service-subtitle {
+            font-weight: 500;
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+        
+        .service-description {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        .service-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 18px;
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: rgba(61, 189, 189, 0.1);
+            border-radius: 50px;
+            margin-top: auto;
+        }
+        
+        .service-card.selected .service-price {
+            background-color: rgba(61, 189, 189, 0.2);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -5px;
+            right: -35px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 25px 40px 8px;
+            transform: rotate(45deg);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Button Styling */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+        }
+        
+        .selection-count {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 16px;
+            background-color: var(--bg-light);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        
+        .btn {
+            padding: 14px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 160px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: black;
+            box-shadow: 0 6px 12px rgba(61, 189, 189, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            color: black;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(61, 189, 189, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-dark);
+            border: 2px solid #e8e8e8;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-light);
+            border-color: #d8d8d8;
+            transform: translateY(-2px);
+        }
+        
+        /* Date and Time Selection */
+        .date-picker, .time-picker {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 16px;
+        }
+        
+        input[type="date"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            outline: none;
+        }
+        
+        input[type="date"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(61, 189, 189, 0.1);
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .time-slot {
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .time-slot:before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #e8e8e8;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            transition: var(--transition);
+        }
+        
+        .time-slot:hover {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .time-slot.selected {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .time-slot.selected:before {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='9' viewBox='0 0 12 9'%3E%3Cpath fill='%23fff' d='M4.1,9 C3.9,9 3.7,8.9 3.6,8.7 L0.3,5.4 C-0.1,5 -0.1,4.4 0.3,4 C0.7,3.6 1.3,3.6 1.7,4 L4.1,6.4 L10.3,0.3 C10.7,-0.1 11.3,-0.1 11.7,0.3 C12.1,0.7 12.1,1.3 11.7,1.7 L4.6,8.7 C4.5,8.9 4.3,9 4.1,9 Z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .time-slot.unavailable {
+            background-color: #f5f5f5;
+            color: #aaa;
+            cursor: not-allowed;
+            opacity: 0.7;
+            position: relative;
+        }
+        
+        .time-slot.unavailable:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(200, 200, 200, 0.2) 5px, rgba(200, 200, 200, 0.2) 10px);
+            border-radius: var(--border-radius);
+            z-index: 0;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            outline: none;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(61, 189, 189, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            margin-top: 30px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .total {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 25px;
+            text-align: right;
+            padding-top: 20px;
+            border-top: 2px solid #e8e8e8;
+        }
+        
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .success-message h2 {
+            color: #4CAF50;
+            margin: 20px 0;
+        }
+        
+        .success-message p {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .success-message strong {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+        
+        /* Quantity Controls */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            background-color: var(--bg-light);
+            border-radius: 50px;
+            padding: 5px;
+            width: fit-content;
+        }
+        
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            background-color: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+            color: var(--text-dark);
+        }
+        
+        .quantity-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .quantity-display {
+            margin: 0 15px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        /* Notes and Alerts */
+        .pickup-note {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f1f9fe;
+            border-radius: var(--border-radius);
+            border-left: 4px solid #3498db;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .pickup-note i {
+            font-size: 24px;
+            color: #3498db;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+            animation: modal-appear 0.3s ease-out;
+        }
+        
+        @keyframes modal-appear {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, var(--primary-light), rgba(61, 189, 189, 0.2));
+            padding: 20px 25px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+        
+        .modal-body {
+            padding: 30px 25px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .action-buttons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .action-buttons a.btn-primary {
+            background-color: var(--primary-color);
+            color: black;
+            box-shadow: 0 6px 12px rgba(61, 189, 189, 0.2);
+        }
+        
+        .action-buttons a.btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(61, 189, 189, 0.3);
+        }
+        
+        .action-buttons a.btn-secondary {
+            background-color: white;
+            color: var(--text-dark);
+            border: 2px solid #e8e8e8;
+        }
+        
+        .action-buttons a.btn-secondary:hover {
+            background-color: var(--bg-light);
+            border-color: #d8d8d8;
+            transform: translateY(-2px);
+        }
+        
+        /* React Popup Styles */
+        .laundry-popup {
+            background-color: white;
+            border-radius: var(--border-radius);
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .laundry-popup-header {
+            background: linear-gradient(to right, var(--primary-light), rgba(61, 189, 189, 0.2));
+            padding: 20px 25px;
+            border-bottom: 1px solid #e8e8e8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .laundry-popup-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 25px;
+        }
+        
+        .laundry-item {
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .laundry-item-name {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-container {
+                flex-direction: column-reverse;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .selection-count {
+                width: 100%;
+                text-align: center;
+                margin-top: 10px;
+            }
+            
+            .step-label {
+                font-size: 12px;
+                width: 80px;
+            }
+            
+            .order-progress:before {
+                left: 30px;
+                right: 30px;
+            }
+            
+            .step {
+                width: 50px;
+                height: 50px;
+            }
+        }
+        
+        /* Section descriptions */
+        .section-description {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        /* Service card improvements */
+        .service-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+        
+        /* Date picker enhancements */
+        .date-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .date-info {
+            color: var(--text-muted);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .date-selection-container {
+            margin-bottom: 30px;
+        }
+        
+        .quick-dates {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .quick-date {
+            background-color: var(--bg-light);
+            border-radius: 30px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .quick-date:hover, .quick-date.selected {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .date-availability {
+            margin-bottom: 30px;
+        }
+        
+        .availability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .availability-card {
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .day-name {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .availability-status {
+            font-weight: 500;
+            margin-bottom: 8px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .availability-status.available {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+        }
+        
+        .availability-status.limited {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: #FF9800;
+        }
+        
+        .availability-note {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        /* Time picker enhancements */
+        .time-period-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .time-period {
+            background-color: var(--bg-light);
+            border-radius: 30px;
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .time-period.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .time-label {
+            margin-bottom: 15px;
+        }
+        
+        .time-slot-hours {
+            font-weight: 500;
+        }
+        
+        .availability-tag {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .availability-tag.last-slots {
+            background-color: rgba(255, 152, 0, 0.15);
+            color: #FF9800;
+        }
+        
+        .availability-tag.fully-booked {
+            background-color: rgba(239, 83, 80, 0.15);
+            color: #EF5350;
+        }
+        
+        .delivery-options {
+            margin-top: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .delivery-options h3 {
+            margin-bottom: 10px;
+        }
+        
+        .delivery-options p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .delivery-timing-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .delivery-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .delivery-option:hover {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .delivery-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .delivery-option label {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            margin-bottom: 0;
+            width: 100%;
+        }
+        
+        .delivery-option-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        .delivery-option-description {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .delivery-option-price {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        /* Confirmation page */
+        .confirmation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .confirmation-card {
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .confirmation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .confirmation-header i {
+            font-size: 24px;
+        }
+        
+        .confirmation-header h3 {
+            margin-bottom: 0;
+            color: var(--text-dark);
+        }
+        
+        .summary-items {
+            margin-bottom: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-item-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .summary-item-name {
+            font-weight: 600;
+        }
+        
+        .summary-item-unit {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .subtotal-row, .tax-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: var(--text-muted);
+        }
+        
+        .total-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .pickup-delivery-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(61, 189, 189, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .detail-value {
+            font-weight: 600;
+        }
+        
+        .personal-info-card {
+            margin-bottom: 25px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 0;
+        }
+        
+        .payment-methods {
+            margin-bottom: 25px;
+        }
+        
+        .payment-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .payment-option {
+            flex: 1;
+            text-align: center;
+            border: 2px solid #e8e8e8;
+            border-radius: var(--border-radius);
+            padding: 20px 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .payment-option:hover {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .payment-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .payment-option input {
+            display: none;
+        }
+        
+        .payment-option label {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0;
+        }
+        
+        .payment-option i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+        
+        .order-agreement {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .order-agreement label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        
+        .order-agreement a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Success page */
+        .success-animation {
+            margin-bottom: 25px;
+        }
+        
+        .success-animation i {
+            font-size: 80px;
+            color: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 15px rgba(76, 175, 80, 0);
+            }
+            
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+        
+        .order-id {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .confirmation-sent {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+        
+        .order-success-details {
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .success-detail {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .success-detail i {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-top: 2px;
+        }
+        
+        .success-detail strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        
+        .order-total-summary {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+        
+        .next-steps {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .next-steps h3 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .steps-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .steps-timeline:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 15px;
+            width: 2px;
+            background-color: #e8e8e8;
+        }
+        
+        .timeline-step {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .timeline-icon {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 1;
+            margin-left: -15px;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-content h4 {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .timeline-content p {
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+        
+        .success-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        /* Responsive adjustments for new components */
+        @media (max-width: 768px) {
+            .confirmation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+            }
+            
+            .time-period-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .success-actions {
+                flex-direction: column;
+            }
+            
+            .order-success-details {
+                padding: 20px 15px;
+            }
+        }
+        
+        /* Enhanced Date Picker */
+        .calendar-view {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+            margin-bottom: 30px;
+            background-color: white;
+        }
+        
+        .calendar-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .calendar-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .calendar-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .calendar-body {
+            padding: 20px;
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .weekday {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 5px;
+        }
+        
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+            border: 2px solid transparent;
+        }
+        
+        .calendar-day:hover:not(.empty):not(.past) {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day.today {
+            border-color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .calendar-day.past {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.empty {
+            cursor: default;
+        }
+        
+        .calendar-day.high-availability::after,
+        .calendar-day.medium-availability::after,
+        .calendar-day.low-availability::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        
+        .calendar-day.high-availability::after {
+            background-color: #4CAF50;
+        }
+        
+        .calendar-day.medium-availability::after {
+            background-color: #FF9800;
+        }
+        
+        .calendar-day.low-availability::after {
+            background-color: #f44336;
+        }
+        
+        .month-selector {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 20px;
+            position: relative;
+        }
+        
+        .month-dropdown {
+            padding: 10px 15px;
+            border: 2px solid #e8e8e8;
+            border-radius: 30px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .month-dropdown:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .month-dropdown::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-left: 10px;
+        }
+        
+        .month-options {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            min-width: 220px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+            padding: 10px 0;
+        }
+        
+        .month-options.show {
+            display: flex;
+            animation: fadeInDown 0.3s;
+        }
+        
+        .month-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .month-option:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .month-option.selected {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -10px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+        
+        /* Date Availability Legend */
+        .availability-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .legend-color.high {
+            background-color: #4CAF50;
+        }
+        
+        .legend-color.medium {
+            background-color: #FF9800;
+        }
+        
+        .legend-color.low {
+            background-color: #f44336;
+        }
+        
+        .special-dates {
+            margin-top: 30px;
+        }
+        
+        .special-dates h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .special-dates h3::before,
+        .special-dates h3::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 70px;
+            height: 1px;
+            background-color: #e8e8e8;
+        }
+        
+        .special-dates h3::before {
+            left: 20%;
+        }
+        
+        .special-dates h3::after {
+            right: 20%;
+        }
+        
+        .special-dates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .special-date-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .special-date-card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            border-color: var(--primary-light);
+        }
+        
+        .special-date-day {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .special-date-date {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        
+        .special-date-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+        
+        .special-date-badge.discount {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+        }
+        
+        /* New Calendar Styles */
+        .calendar-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .calendar-image {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .seasonal-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .calendar-prompt {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+            padding: 30px 20px 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .calendar-prompt i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .calendar-view {
+            flex: 1.5;
+            min-width: 350px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .quick-date-selection {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .quick-date-selection h3 {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .quick-dates {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .quick-date {
+            background: white;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quick-date:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .quick-date-icon {
+            background: var(--primary-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        .special-dates h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .special-date-icon {
+            background: var(--primary-light);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        /* Time Selection Styles */
+        .time-selection-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .time-visual {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .time-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .time-prompt {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+            padding: 30px 20px 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .time-prompt i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .time-picker {
+            flex: 1.5;
+            min-width: 350px;
+        }
+        
+        .time-period-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .time-period {
+            flex: 1;
+            background: white;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .time-period.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .period-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .period-label {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .period-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .time-label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .time-slots {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .time-slot {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .time-slot:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .time-slot.unavailable {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .time-slot-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .time-slot-visual i {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .time-progress-bar {
+            width: 60px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .time-progress-bar .progress {
+            height: 100%;
+            background: var(--primary-color);
+        }
+        
+        .time-slot-details {
+            flex: 1;
+        }
+        
+        .time-slot-hours {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .delivery-options {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .delivery-options h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .delivery-timing-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .delivery-option {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .delivery-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .delivery-option input {
+            margin-right: 10px;
+        }
+        
+        .option-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        
+        .delivery-option label {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .delivery-option-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .delivery-option-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .delivery-option-price {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        /* Confirmation Styles */
+        .confirmation-header-image {
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            max-height: 200px;
+        }
+        
+        .confirm-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .confirmation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .confirmation-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 25px;
+        }
+        
+        .confirmation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .confirmation-header i {
+            font-size: 1.5rem;
+        }
+        
+        .personal-info-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .personal-info-visual {
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .personal-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .personal-info-form {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group label i {
+            color: var(--primary-color);
+        }
+        
+        .payment-methods {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .payment-methods h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            background: white;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .payment-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+        
+        .payment-icon {
+            background: var(--primary-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        
+        .payment-option label {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .payment-description {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .order-agreement {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            padding: 0 10px;
+        }
+        
+        .agreement-checkbox {
+            position: relative;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .agreement-checkbox input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: pointer;
+        }
+        
+        .checkbox-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            transition: var(--transition);
+        }
+        
+        .agreement-checkbox input:checked + .checkbox-icon {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-large {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .calendar-container, 
+            .time-selection-container,
+            .confirmation-grid {
+                flex-direction: column;
+            }
+            
+            .payment-options,
+            .delivery-timing-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-dates {
+                flex-wrap: wrap;
+            }
+            
+            .quick-date {
+                min-width: calc(50% - 10px);
+            }
+            
+            .personal-info-visual {
+                max-width: 100%;
+            }
+        }
+        
+        /* Custom animation for the time slots and delivery options */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .time-slot.selected,
+        .delivery-option.selected,
+        .payment-option.selected {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Step 2: Date Selection styles */
+        .date-card-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .date-intro {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .date-picker {
+            position: relative;
+        }
+        
+        .date-picker label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .date-picker input[type="date"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: var(--white);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .date-picker input[type="date"]:focus,
+        .date-picker input[type="date"]:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(61, 189, 189, 0.2);
+            outline: none;
+        }
+        
+        .calendar-widget {
+            margin-bottom: 30px;
+        }
+        
+        .month-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .month-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+        }
+        
+        .month-nav-btn {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--bg-light);
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .month-nav-btn:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        .calendar-day-name {
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9em;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .calendar-day {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .calendar-day:hover:not(.disabled) {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .calendar-day.today {
+            border: 2px solid var(--primary-light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+        }
+        
+        .calendar-day.has-note::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--primary);
+        }
+        
+        .date-info {
+            background-color: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .date-info-icon {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+        
+        .availability-legend {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            color: var(--text-light);
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .legend-color.available {
+            background-color: var(--primary);
+        }
+        
+        .legend-color.booked {
+            background-color: #ccc;
+        }
+        
+        .legend-color.peak {
+            background-color: var(--secondary);
+        }
+        
+        .date-picker-illustration {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .date-picker-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .quick-select-dates {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-date {
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        
+        .quick-date:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .quick-date.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Step 3: Time Selection styles */
+        .time-intro {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .time-slots-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .time-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .time-period {
+            background-color: var(--bg-light);
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .time-period-icon {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+        }
+        
+        .time-slot {
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .time-slot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .time-slot:hover:not(.unavailable)::before {
+            transform: translateY(0);
+        }
+        
+        .time-slot:hover:not(.unavailable) {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .time-slot.selected {
+            background: linear-gradient(to bottom right, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(61, 189, 189, 0.3);
+        }
+        
+        .time-slot.unavailable {
+            background-color: #f5f5f5;
+            color: #aaa;
+            cursor: not-allowed;
+            position: relative;
+        }
+        
+        .time-slot.unavailable::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                45deg, 
+                transparent, 
+                transparent 5px, 
+                rgba(0,0,0,0.05) 5px, 
+                rgba(0,0,0,0.05) 10px
+            );
+        }
+        
+        .time-slot-icon {
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+        
+        .time-availability {
+            font-size: 0.8em;
+            margin-top: 5px;
+            color: var(--text-light);
+        }
+        
+        .time-slot.high-demand .time-availability {
+            color: var(--secondary);
+        }
+        
+        .time-slot.limited .time-availability {
+            color: #ff9800;
+        }
+        
+        .time-slot.selected .time-availability {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .time-slot-illustration {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .time-slot-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .time-info {
+            background-color: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+        
+        .time-preferences {
+            margin-top: 30px;
+        }
+        
+        .time-preferences-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .preference-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preference-option {
+            padding: 8px 15px;
+            border-radius: 50px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9em;
+        }
+        
+        .preference-option:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .preference-option.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Step 4: Confirmation styles */
+        #confirm-card .card {
+            margin-bottom: 20px;
+            transition: var(--transition);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        #confirm-card .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        #confirm-card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #confirm-card h3::before {
+            content: '';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: var(--primary);
+            font-size: 1.2em;
+        }
+        
+        #confirm-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+        
+        #confirm-card h3.summary-title::before {
+            content: '\f0ca';
+        }
+        
+        #confirm-card h3.pickup-title::before {
+            content: '\f5a0';
+        }
+        
+        #confirm-card h3.personal-title::before {
+            content: '\f007';
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-item-title {
+            font-weight: 500;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .summary-item-title i {
+            color: var(--primary);
+            font-size: 1.1em;
+        }
+        
+        .summary-item-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .summary-quantity {
+            color: var(--text-light);
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+        
+        .total {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 20px;
+            text-align: right;
+            padding-top: 15px;
+            border-top: 2px dashed #e0e0e0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: var(--white);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group input:hover,
+        .form-group textarea:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(61, 189, 189, 0.2);
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .confirm-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .confirm-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .confirm-right {
+            position: relative;
+        }
+        
+        .confirm-sidebar {
+            position: sticky;
+            top: 130px;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            padding: 25px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .confirm-summary {
+            margin-bottom: 20px;
+        }
+        
+        .confirm-total {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+            text-align: center;
+            padding: 15px 0;
+            border-top: 2px dashed #e0e0e0;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+        
+        .confirm-guarantee {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .confirm-guarantee i {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+        
+        .payment-options {
+            margin-top: 20px;
+        }
+        
+        .payment-options-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .payment-method {
+            width: 60px;
+            height: 40px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .payment-method:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .payment-method img {
+            max-width: 80%;
+            max-height: 80%;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .confirm-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-slots-container,
+            .date-card-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Improved text visibility for elements */
+        .time-availability {
+            font-size: 0.85em;
+            margin-top: 5px;
+            color: #4a5568; /* Darker color for better contrast */
+            font-weight: 500;
+        }
+        
+        .time-slot.high-demand .time-availability {
+            color: #e53e3e; /* Brighter red for high demand */
+            font-weight: 600;
+        }
+        
+        .time-slot.limited .time-availability {
+            color: #dd6b20; /* Brighter orange for limited spots */
+            font-weight: 600;
+        }
+        
+        /* Ensure calendar days are more visible */
+        .calendar-day {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            position: relative;
+            background-color: var(--white);
+            border: 1px solid #e2e8f0;
+            color: var(--text-dark);
+        }
+        
+        .calendar-day:hover:not(.disabled) {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .calendar-day.today {
+            border: 2px solid var(--primary);
+            font-weight: 700;
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 700;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .calendar-day.disabled {
+            color: #cbd5e0;
+            cursor: not-allowed;
+            background-color: #f7fafc;
+            border-color: #edf2f7;
+        }
+        
+        /* Calendar month and navigation improved */
+        .month-title {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary-dark);
+        }
+        
+        .month-nav-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--white);
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .month-nav-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Improve quick dates visibility */
+        .quick-date {
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            background-color: var(--white);
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9em;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .quick-date:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .quick-date.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+        
+        .creative-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 30px 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(197,241,241,0.4) 100%);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .creative-header:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-5px);
+        }
+        
+        .header-bubbles {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bubble {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        .bubble-1 {
+            background-color: #ff6b6b;
+            animation-delay: 0s;
+        }
+        
+        .bubble-2 {
+            background-color: #3dbdbd;
+            animation-delay: 0.5s;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .bubble-3 {
+            background-color: #ffd166;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.1); }
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #fff;
+            filter: blur(1px);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .creative-title {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+            line-height: 1.2;
+        }
+        
+        .title-accent {
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .title-accent::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: var(--primary-light);
+            z-index: -1;
+            border-radius: 4px;
+        }
+        
+        .title-highlight {
+            color: var(--secondary);
+            display: inline-block;
+            transform: rotate(-2deg);
+            font-size: 3.5rem;
+        }
+        
+        .wave-text {
+            display: inline-block;
+            animation: wave 2.5s infinite;
+            color: var(--primary-dark);
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(2deg); }
+            75% { transform: translateY(5px) rotate(-2deg); }
+        }
+        
+        .header-decoration {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            gap: 20px;
+        }
+        
+        .laundry-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 0 10px;
+            background: var(--white);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            animation: pulse 3s infinite;
+        }
+        
+        .laundry-icon:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+        
+        .laundry-icon:nth-child(1) {
+            animation-delay: 0s;
+            color: var(--secondary);
+        }
+        
+        .laundry-icon:nth-child(2) {
+            animation-delay: 0.5s;
+            color: var(--primary);
+        }
+        
+        .laundry-icon:nth-child(3) {
+            animation-delay: 1s;
+            color: var(--accent);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .header-water-drops {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .water-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(61, 189, 189, 0.2);
+            animation: dropFall 8s linear infinite;
+        }
+        
+        .water-drop:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .water-drop:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .water-drop:nth-child(3) { left: 50%; animation-delay: 4s; }
+        .water-drop:nth-child(4) { left: 70%; animation-delay: 6s; }
+        .water-drop:nth-child(5) { left: 85%; animation-delay: 3s; }
+        
+        @keyframes dropFall {
+            0% { top: -20px; opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        @keyframes sparkleAnimation {
+            0% { transform: scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        /* Glowing effect on hover for menu items */
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-light) 0%, rgba(255, 255, 255, 0) 70%);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+        
+        nav ul li a:hover::after {
+            width: 150%;
+            height: 150%;
+            opacity: 1;
+        }
+        
+        /* Welcome message section */
+        .welcome-section {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 80px;
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 15px 30px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 900;
+            border: 1px solid var(--primary-light);
+        }
+        
+        .welcome-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: welcome-bounce 3s infinite;
+        }
+        
+        @keyframes welcome-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(10deg); }
+        }
+        
+        .welcome-text {
+            font-weight: 600;
+            color: var(--text-dark);
+            position: relative;
+        }
+        
+        .typing-effect {
+            position: relative;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        
+        .typing-effect::after {
+            content: '|';
+            position: absolute;
+            right: -8px;
+            color: var(--primary);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-wave"></div>
+        <div class="nav-bubbles">
+            <div class="nav-bubble"></div>
+            <div class="nav-bubble"></div>
+            <div class="nav-bubble"></div>
+        </div>
+        <div class="logo">
+            <div class="logo-shine"></div>
+            <img src="https://cdn-icons-png.flaticon.com/512/8142/8142249.png" alt="Laundry Logo">
+            The Laundry Lounge
+        </div>
+        <ul>
+            <div class="menu-indicator"></div>
+            <li><a href="laundary.html"><i class="fas fa-home icon"></i>HOME</a></li>
+            <li class="active"><a href="neworder.html"><i class="fas fa-tshirt icon"></i>NEW ORDER<span class="nav-notification">!</span></a></li>
+            <li><a href="trackorder.html"><i class="fas fa-truck icon"></i>TRACK ORDER</a></li>
+            <li><a href="operator-dashboard.html"><i class="fas fa-user-cog icon"></i>OPERATOR</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="creative-header">
+            <div class="header-bubbles">
+                <div class="bubble bubble-1"></div>
+                <div class="bubble bubble-2"></div>
+                <div class="bubble bubble-3"></div>
+            </div>
+            <h1 class="creative-title">
+                <span class="title-accent">Create</span> Your 
+                <div class="title-highlight">Laundry <span class="wave-text">Order</span></div>
+            </h1>
+            <div class="header-decoration">
+                <div class="laundry-icon"><i class="fas fa-tshirt"></i></div>
+                <div class="laundry-icon"><i class="fas fa-soap"></i></div>
+                <div class="laundry-icon"><i class="fas fa-water"></i></div>
+            </div>
+            <div class="header-water-drops">
+                <div class="water-drop"></div>
+                <div class="water-drop"></div>
+                <div class="water-drop"></div>
+                <div class="water-drop"></div>
+                <div class="water-drop"></div>
+            </div>
+        </div>
+        
+        <div class="order-progress">
+            <div class="step active" id="step1">
+                1
+                <div class="step-label">Select Services</div>
+            </div>
+            <div class="step" id="step2">
+                2
+                <div class="step-label">Choose Date</div>
+            </div>
+            <div class="step" id="step3">
+                3
+                <div class="step-label">Choose Time</div>
+            </div>
+            <div class="step" id="step4">
+                4
+                <div class="step-label">Confirm Order</div>
+            </div>
+        </div>
+        
+        <!-- Step 1: Services -->
+        <div class="card" id="services-card">
+            <h2>Choose Your Services</h2>
+            <p class="section-description">Select the laundry services you need. You can choose multiple options.</p>
+            
+            <div class="service-grid">
+                <div class="service-card" data-id="1" data-price="1.99" data-unit="lb">
+                    <div class="popular-badge">POPULAR</div>
+                    <div class="service-header">
+                        <div class="service-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div>
+                        <div class="service-title">Wash & Fold</div>
+                            <div class="service-subtitle">Regular laundry</div>
+                    </div>
+                    </div>
+                    <div class="service-description">
+                        Your everyday laundry, washed with premium detergent and neatly folded by our experts
+                    </div>
+                    <div class="service-price">$1.99/lb</div>
+                    <div class="quantity-control hidden">
+                        <div class="quantity-btn minus"><i class="fas fa-minus"></i></div>
+                        <div class="quantity-display">1</div>
+                        <div class="quantity-btn plus"><i class="fas fa-plus"></i></div>
+                    </div>
+                </div>
+                
+                <div class="service-card" data-id="2" data-price="5.99" data-unit="item">
+                    <div class="service-header">
+                        <div class="service-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div>
+                        <div class="service-title">Dry Cleaning</div>
+                            <div class="service-subtitle">Delicate items</div>
+                    </div>
+                    </div>
+                    <div class="service-description">
+                        Professional care for delicate garments, suits, formal wear, and special fabrics
+                    </div>
+                    <div class="service-price">$5.99/item</div>
+                    <div class="quantity-control hidden">
+                        <div class="quantity-btn minus"><i class="fas fa-minus"></i></div>
+                        <div class="quantity-display">1</div>
+                        <div class="quantity-btn plus"><i class="fas fa-plus"></i></div>
+                    </div>
+                </div>
+                
+                <div class="service-card" data-id="3" data-price="3.50" data-unit="item">
+                    <div class="service-header">
+                        <div class="service-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div>
+                            <div class="service-title">Wash & Iron</div>
+                            <div class="service-subtitle">Pressed perfection</div>
+                        </div>
+                    </div>
+                    <div class="service-description">
+                        Clean clothes with professional pressing and ironing for a crisp, wrinkle-free finish
+                    </div>
+                    <div class="service-price">$3.50/item</div>
+                    <div class="quantity-control hidden">
+                        <div class="quantity-btn minus"><i class="fas fa-minus"></i></div>
+                        <div class="quantity-display">1</div>
+                        <div class="quantity-btn plus"><i class="fas fa-plus"></i></div>
+                    </div>
+                </div>
+                
+                <div class="service-card" data-id="4" data-price="12.99" data-unit="set">
+                    <div class="service-header">
+                        <div class="service-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <div>
+                            <div class="service-title">Bedding & Linens</div>
+                            <div class="service-subtitle">Refresh your home</div>
+                        </div>
+                    </div>
+                    <div class="service-description">
+                        Deep cleaning for sheets, comforters, pillowcases, towels, and other household linens
+                    </div>
+                    <div class="service-price">$12.99/set</div>
+                    <div class="quantity-control hidden">
+                        <div class="quantity-btn minus"><i class="fas fa-minus"></i></div>
+                        <div class="quantity-display">1</div>
+                        <div class="quantity-btn plus"><i class="fas fa-plus"></i></div>
+                    </div>
+                </div>
+                
+                <div class="service-card" data-id="5" data-price="1.5" data-unit="multiplier">
+                    <div class="service-header">
+                        <div class="service-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            <div class="service-title">Express Service</div>
+                            <div class="service-subtitle">24-hour turnaround</div>
+                    </div>
+                    </div>
+                    <div class="service-description">
+                        Priority handling with same-day or next-day service for when you need your items back fast
+                    </div>
+                    <div class="service-price">+50% Rush Fee</div>
+                </div>
+                
+                <div class="service-card" data-id="6" data-price="7.99" data-unit="item">
+                    <div class="service-header">
+                        <div class="service-icon">
+                            <i class="fas fa-spray-can"></i>
+                        </div>
+                        <div>
+                            <div class="service-title">Stain Treatment</div>
+                            <div class="service-subtitle">Spot removal</div>
+                        </div>
+                    </div>
+                    <div class="service-description">
+                        Specialized treatment for tough stains, spots, and discolorations on your valued items
+                    </div>
+                    <div class="service-price">$7.99/stain</div>
+                    <div class="quantity-control hidden">
+                        <div class="quantity-btn minus"><i class="fas fa-minus"></i></div>
+                        <div class="quantity-display">1</div>
+                        <div class="quantity-btn plus"><i class="fas fa-plus"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pickup-note">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Free pickup and delivery</strong> on all orders over $25. Our friendly drivers will collect and return your items at your chosen time.
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <div class="selection-count"><i class="fas fa-check-circle"></i> <span>0 services selected</span></div>
+                <button id="next-to-datetime" class="btn btn-primary" data-current-step="1" data-target-step="2">Continue <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Date selection -->
+        <div class="card hidden" id="date-card">
+            <h2>Choose Your Pickup Date</h2>
+            
+            <div class="date-intro">
+                Select your preferred date for laundry pickup. We offer flexible scheduling to fit your convenience.
+            </div>
+            
+            <div class="date-card-content">
+                <div class="calendar-side">
+                    <div class="quick-select-dates">
+                        <div class="quick-date" data-days="0">Today</div>
+                        <div class="quick-date" data-days="1">Tomorrow</div>
+                        <div class="quick-date" data-days="2">In 2 Days</div>
+                        <div class="quick-date" data-days="7">Next Week</div>
+                    </div>
+                    
+                    <div class="calendar-widget">
+                        <div class="month-navigation">
+                            <button id="prevMonth" class="month-nav-btn prev-month"><i class="fas fa-chevron-left"></i></button>
+                            <div id="currentMonthYear" class="month-title">September 2023</div>
+                            <button id="nextMonth" class="month-nav-btn next-month"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        
+                        <div id="calendar-days" class="calendar-grid">
+                            <div class="calendar-day-name">Sun</div>
+                            <div class="calendar-day-name">Mon</div>
+                            <div class="calendar-day-name">Tue</div>
+                            <div class="calendar-day-name">Wed</div>
+                            <div class="calendar-day-name">Thu</div>
+                            <div class="calendar-day-name">Fri</div>
+                            <div class="calendar-day-name">Sat</div>
+                            
+                            <!-- Calendar days will be dynamically generated by JavaScript -->
+                            <div class="calendar-day empty">28</div>
+                            <div class="calendar-day empty">29</div>
+                            <div class="calendar-day empty">30</div>
+                            <div class="calendar-day empty">31</div>
+                            <div class="calendar-day">1</div>
+                            <div class="calendar-day">2</div>
+                            <div class="calendar-day">3</div>
+                            <div class="calendar-day">4</div>
+                            <div class="calendar-day">5</div>
+                            <div class="calendar-day">6</div>
+                            <div class="calendar-day">7</div>
+                            <div class="calendar-day">8</div>
+                            <div class="calendar-day">9</div>
+                            <div class="calendar-day">10</div>
+                            <div class="calendar-day">11</div>
+                            <div class="calendar-day">12</div>
+                            <div class="calendar-day today">13</div>
+                            <div class="calendar-day">14</div>
+                            <div class="calendar-day">15</div>
+                            <div class="calendar-day">16</div>
+                            <div class="calendar-day">17</div>
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day">19</div>
+                            <div class="calendar-day">20</div>
+                            <div class="calendar-day">21</div>
+                            <div class="calendar-day">22</div>
+                            <div class="calendar-day">23</div>
+                            <div class="calendar-day">24</div>
+                            <div class="calendar-day">25</div>
+                            <div class="calendar-day">26</div>
+                            <div class="calendar-day">27</div>
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day">29</div>
+                            <div class="calendar-day">30</div>
+                            <div class="calendar-day empty">1</div>
+                        </div>
+                    </div>
+                    
+                    <div class="availability-legend">
+                        <div class="legend-item">
+                            <div class="legend-color available"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color booked"></div>
+                            <span>Fully Booked</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color peak"></div>
+                            <span>Peak Hours</span>
+                        </div>
+                    </div>
+                    
+                    <div class="date-picker">
+                        <label for="pickup-date">Or select a specific date:</label>
+                        <input type="date" id="pickup-date" min="">
+                    </div>
+                </div>
+                
+                <div class="date-picker-illustration">
+                    <img src="https://img.freepik.com/free-vector/people-with-calendar-schedule-appointment-booking_179970-43.jpg" alt="Calendar Illustration" class="date-picker-image">
+                    
+                    <div class="date-info">
+                        <p><i class="fas fa-info-circle date-info-icon"></i> We process orders every day except on Sundays and public holidays.</p>
+                        <p><i class="fas fa-clock date-info-icon"></i> Regular pickup hours are from 8:00 AM to 6:00 PM.</p>
+                        <p><i class="fas fa-calendar-alt date-info-icon"></i> You can schedule your pickup up to 30 days in advance.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button id="back-to-services" class="btn btn-secondary" data-current-step="2" data-target-step="1">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button id="next-to-address" class="btn btn-primary" data-current-step="2" data-target-step="3">
+                    Continue <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Time selection -->
+        <div class="card hidden" id="time-card">
+            <h2>Choose Your Pickup Time</h2>
+            
+            <div class="time-intro">
+                Select a convenient time slot for your laundry pickup. Our professional team will arrive within the selected time window.
+            </div>
+            
+            <div class="time-slots-container">
+                <div class="time-column">
+                    <div>
+                        <div class="time-period">
+                            <i class="fas fa-sun time-period-icon"></i> Morning Slots
+                        </div>
+                        <div class="time-slots">
+                            <div class="time-slot" data-id="1">
+                                <i class="far fa-clock time-slot-icon"></i>8:00 - 10:00 AM
+                                <div class="time-availability">Available</div>
+                            </div>
+                            <div class="time-slot high-demand" data-id="2">
+                                <i class="far fa-clock time-slot-icon"></i>10:00 - 12:00 PM
+                                <div class="time-availability">High demand</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="time-period">
+                            <i class="fas fa-cloud-sun time-period-icon"></i> Afternoon Slots
+                        </div>
+                        <div class="time-slots">
+                            <div class="time-slot" data-id="3">
+                                <i class="far fa-clock time-slot-icon"></i>12:00 - 2:00 PM
+                                <div class="time-availability">Available</div>
+                            </div>
+                            <div class="time-slot limited" data-id="4">
+                                <i class="far fa-clock time-slot-icon"></i>2:00 - 4:00 PM
+                                <div class="time-availability">Limited spots</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="time-period">
+                            <i class="fas fa-moon time-period-icon"></i> Evening Slots
+                        </div>
+                        <div class="time-slots">
+                            <div class="time-slot" data-id="5">
+                                <i class="far fa-clock time-slot-icon"></i>4:00 - 6:00 PM
+                                <div class="time-availability">Available</div>
+                            </div>
+                            <div class="time-slot" data-id="6">
+                                <i class="far fa-clock time-slot-icon"></i>6:00 - 8:00 PM
+                                <div class="time-availability">Available</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="time-preferences">
+                        <div class="time-preferences-title">Special Timing Preferences</div>
+                        <div class="preference-options">
+                            <div class="preference-option">Exact Time Notification</div>
+                            <div class="preference-option">Call Before Arrival</div>
+                            <div class="preference-option">Extended Window OK</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="time-slot-illustration">
+                    <img src="https://img.freepik.com/free-vector/time-management-concept-illustration_114360-1013.jpg" alt="Time Selection Illustration" class="time-slot-image">
+                    
+                    <div class="time-info">
+                        <p><i class="fas fa-info-circle date-info-icon"></i> Our pickup drivers will arrive within the selected 2-hour window.</p>
+                        <p><i class="fas fa-bell date-info-icon"></i> You'll receive a notification 30 minutes before arrival.</p>
+                        <p><i class="fas fa-exclamation-circle date-info-icon"></i> High demand slots may experience slight delays during peak times.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button id="back-to-datetime" class="btn btn-secondary" data-current-step="3" data-target-step="2">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button id="next-to-confirm" class="btn btn-primary" data-current-step="3" data-target-step="4">
+                    Continue <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 4: Confirmation -->
+        <div class="card hidden" id="confirm-card">
+            <h2>Confirm Your Order</h2>
+            
+            <div class="confirm-container">
+                <div class="confirm-left">
+                    <div class="card">
+                        <h3 class="summary-title">Order Summary</h3>
+                        <div id="summary-items">
+                            <!-- Items will be populated dynamically -->
+                            <div class="summary-item">
+                                <div class="summary-item-title">
+                                    <i class="fas fa-tint"></i> Wash & Fold
+                                    <div class="summary-quantity">10 lbs estimated</div>
+                                </div>
+                                <div class="summary-item-value">$19.90</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-item-title">
+                                    <i class="fas fa-wind"></i> Dry Cleaning
+                                    <div class="summary-quantity">3 items</div>
+                                </div>
+                                <div class="summary-item-value">$17.97</div>
+                            </div>
+                        </div>
+                        
+                        <div class="total">Total: $<span id="total-amount">37.87</span></div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="pickup-title">Pickup Details</h3>
+                        <div class="summary-item">
+                            <div class="summary-item-title">
+                                <i class="fas fa-calendar-alt"></i> Date
+                            </div>
+                            <div class="summary-item-value" id="summary-date">September 15, 2023</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-item-title">
+                                <i class="fas fa-clock"></i> Time
+                            </div>
+                            <div class="summary-item-value" id="summary-time">10:00 AM - 12:00 PM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="personal-title">Your Information</h3>
+                        <div class="form-group">
+                            <label for="name">Full Name:</label>
+                            <input type="text" id="name" required placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" required placeholder="Enter your email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number:</label>
+                            <input type="tel" id="phone" required placeholder="Enter your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Pickup Address:</label>
+                            <textarea id="address" required placeholder="Enter your complete address for pickup"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="special-instructions">Special Instructions:</label>
+                        <textarea id="special-instructions" placeholder="Any special requirements for your laundry? (e.g., allergies, fabric preferences, stain treatments)"></textarea>
+                    </div>
+                </div>
+                
+                <div class="confirm-right">
+                    <div class="confirm-sidebar">
+                        <div class="confirm-summary">
+                            <h3 style="text-align: center; margin-bottom: 25px;">Order Overview</h3>
+                            
+                            <div class="summary-item">
+                                <div class="summary-item-title">Services</div>
+                                <div class="summary-item-value">2 items</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-item-title">Pickup</div>
+                                <div class="summary-item-value">Sept 15</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-item-title">Time</div>
+                                <div class="summary-item-value">10AM-12PM</div>
+                            </div>
+                        </div>
+                        
+                        <div class="confirm-total">$<span id="sidebar-total">37.87</span></div>
+                        
+                        <div class="payment-options">
+                            <div class="payment-options-title">Accepted Payment Methods</div>
+                            <div class="payment-methods">
+                                <div class="payment-method">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+                                </div>
+                                <div class="payment-method">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="MasterCard">
+                                </div>
+                                <div class="payment-method">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="PayPal">
+                                </div>
+                                <div class="payment-method">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968220.png" alt="Apple Pay">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="place-order" style="width: 100%; margin-top: 25px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); font-size: 1.1rem; padding: 15px; font-weight: 600; box-shadow: var(--shadow-md);">
+                            <i class="fas fa-check-circle"></i> Place Order
+                        </button>
+                        
+                        <div class="confirm-guarantee">
+                            <i class="fas fa-shield-alt"></i> 100% Satisfaction Guarantee
+                            <br>
+                            <i class="fas fa-lock"></i> Secure Payment Processing
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container" style="margin-top: 30px; display: flex; justify-content: space-between; width: 100%;">
+                <button id="back-to-address" class="btn btn-secondary" data-current-step="4" data-target-step="3">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button class="btn btn-primary" id="place-order-bottom" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); font-weight: 600;">
+                    <i class="fas fa-check-circle"></i> Place Order
+                </button>
+            </div>
+        </div>
+        
+        <!-- Order Success -->
+        <div class="card hidden" id="success-card">
+            <div class="success-message">
+                <div class="success-animation">
+                    <i class="fas fa-check-circle"></i>
+            </div>
+                <h2>Your Order is Confirmed!</h2>
+                <p class="order-id">Order ID: <strong id="order-number">LL-2023-0001</strong></p>
+                <p class="confirmation-sent">We've sent a confirmation email to your inbox</p>
+                
+                <div class="order-success-details">
+                    <div class="success-detail">
+                        <i class="fas fa-calendar-check"></i>
+                        <div>
+                            <strong>Pickup Date & Time:</strong>
+                            <span id="success-datetime">Monday, June 10 • 2:00 PM - 4:00 PM</span>
+                        </div>
+                    </div>
+                    <div class="success-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Pickup Location:</strong>
+                            <span id="success-address">123 Main St, Apt 4B, Cityville</span>
+                        </div>
+                    </div>
+                    <div class="success-detail">
+                        <i class="fas fa-truck"></i>
+                        <div>
+                            <strong>Estimated Delivery:</strong>
+                            <span id="success-delivery">Wednesday, June 12 • By 6:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-total-summary">
+                    <span>Order Total:</span>
+                    <span id="success-total">$36.75</span>
+                </div>
+            </div>
+            
+            <div class="next-steps">
+                <h3>What happens next?</h3>
+                <div class="steps-timeline">
+                    <div class="timeline-step">
+                        <div class="timeline-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Reminder</h4>
+                            <p>You'll receive a reminder 2 hours before pickup</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-icon">
+                            <i class="fas fa-truck-loading"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Pickup</h4>
+                            <p>Our driver will collect your laundry at the scheduled time</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Processing</h4>
+                            <p>Your clothes will be expertly cleaned according to your preferences</p>
+                        </div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Delivery</h4>
+                            <p>Fresh laundry will be returned to you clean and neatly folded</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="success-actions">
+                <a href="trackorder.html" class="btn btn-primary"><i class="fas fa-search"></i> Track Your Order</a>
+                <a href="laundary.html" class="btn btn-secondary"><i class="fas fa-home"></i> Return to Home</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize socket.io connection for real-time updates
+        let socket;
+        try {
+            socket = io();
+            console.log("Socket.io initialized for order creation");
+            
+            socket.on('connect', function() {
+                console.log("Connected to socket server for real-time updates");
+            });
+            
+            socket.on('connect_error', function(error) {
+                console.error("Socket connection error:", error);
+            });
+        } catch (e) {
+            console.error("Error initializing socket:", e);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize OrderManager
+            if (typeof OrderManager !== 'undefined') {
+                OrderManager.init();
+            }
+            
+            // Variables
+            const selectedServices = [];
+            const quantities = {};
+            let selectedDate = null;
+            let selectedTime = null;
+            
+            // Set min date to today
+            const today = new Date();
+            const todayFormatted = today.toISOString().split('T')[0];
+            document.getElementById('pickup-date').min = todayFormatted;
+            
+            // Service selection
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    
+                    // Show/hide quantity controls for items that need quantity
+                    const quantityControl = this.querySelector('.quantity-control');
+                    if (quantityControl) {
+                        if (this.classList.contains('selected')) {
+                            quantityControl.classList.remove('hidden');
+                            
+                            // If this is the Wash & Fold card (data-id="1"), open the laundry popup
+                            if (this.getAttribute('data-id') === '1' && window.LaundryPopupController) {
+                                // Allow a small delay for the selection to be visible first
+                                setTimeout(() => {
+                                    window.LaundryPopupController.open();
+                                }, 100);
+                            }
+                        } else {
+                            quantityControl.classList.add('hidden');
+                        }
+                    }
+                    
+                    updateSelectionCount();
+                    // Update order summary when services are selected/deselected
+                    updateOrderSummary();
+                });
+                
+                // Setup quantity buttons if they exist
+                const decreaseBtn = card.querySelector('.quantity-btn.minus');
+                const increaseBtn = card.querySelector('.quantity-btn.plus');
+                const quantityDisplay = card.querySelector('.quantity-display');
+                
+                if (decreaseBtn && increaseBtn && quantityDisplay) {
+                    decreaseBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card selection toggle
+                        let quantity = parseInt(quantityDisplay.textContent);
+                        if (quantity > 1) {
+                            quantity--;
+                            quantityDisplay.textContent = quantity;
+                            
+                            // Store quantity in the quantities object
+                            const serviceId = parseInt(card.dataset.id);
+                            quantities[serviceId] = quantity;
+                            
+                            updateOrderSummary();
+                        }
+                    });
+                    
+                    increaseBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card selection toggle
+                        let quantity = parseInt(quantityDisplay.textContent);
+                        quantity++;
+                        quantityDisplay.textContent = quantity;
+                        
+                        // Store quantity in the quantities object
+                        const serviceId = parseInt(card.dataset.id);
+                        quantities[serviceId] = quantity;
+                        
+                        updateOrderSummary();
+                    });
+                }
+            });
+            
+            // Date selection
+            document.getElementById('pickup-date').addEventListener('change', function() {
+                selectedDate = this.value;
+            });
+            
+            // Time selection
+            const timeSlots = document.querySelectorAll('.time-slot:not(.unavailable)');
+            timeSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    // Remove selected class from all time slots
+                    timeSlots.forEach(s => s.classList.remove('selected'));
+                    
+                    // Add selected class to clicked time slot
+                    this.classList.add('selected');
+                    selectedTime = this.textContent;
+                    
+                    // Update order summary
+                    updateOrderSummary();
+                });
+            });
+            
+            // Navigation with validation
+            document.getElementById('next-to-datetime').addEventListener('click', function() {
+                // Validate that at least one service is selected
+                const selectedCards = document.querySelectorAll('.service-card.selected');
+                if (selectedCards.length === 0) {
+                    showNotification('Please select at least one service.', 'error');
+                    return;
+                }
+                
+                document.getElementById('services-card').classList.add('hidden');
+                document.getElementById('date-card').classList.remove('hidden');
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+            });
+            
+            document.getElementById('back-to-services').addEventListener('click', function() {
+                document.getElementById('date-card').classList.add('hidden');
+                document.getElementById('services-card').classList.remove('hidden');
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step1').classList.add('active');
+            });
+            
+            document.getElementById('next-to-address').addEventListener('click', function() {
+                // Validate date selection
+                if (!selectedDate) {
+                    showNotification('Please select a pickup date.', 'error');
+                    return;
+                }
+                
+                document.getElementById('date-card').classList.add('hidden');
+                document.getElementById('time-card').classList.remove('hidden');
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+            });
+            
+            document.getElementById('back-to-datetime').addEventListener('click', function() {
+                document.getElementById('time-card').classList.add('hidden');
+                document.getElementById('date-card').classList.remove('hidden');
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+            });
+            
+            document.getElementById('next-to-confirm').addEventListener('click', function() {
+                // Validate time selection
+                if (!selectedTime) {
+                    showNotification('Please select a time slot.', 'error');
+                    return;
+                }
+                
+                document.getElementById('time-card').classList.add('hidden');
+                document.getElementById('confirm-card').classList.remove('hidden');
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step4').classList.add('active');
+                
+                updateOrderSummary();
+            });
+            
+            document.getElementById('back-to-address').addEventListener('click', function() {
+                document.getElementById('confirm-card').classList.add('hidden');
+                document.getElementById('time-card').classList.remove('hidden');
+                document.getElementById('step4').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+            });
+            
+            // Place order
+            document.getElementById('place-order').addEventListener('click', function() {
+                // Validate required fields
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const address = document.getElementById('address').value.trim();
+                
+                if (!name || !email || !address) {
+                    showNotification('Please fill in all required fields to continue.', 'error');
+                    return;
+                }
+                
+                // Check if services are selected and date/time are set
+                const selectedCards = document.querySelectorAll('.service-card.selected');
+                if (selectedCards.length === 0) {
+                    showNotification('Please select at least one service.', 'error');
+                    return;
+                }
+                
+                if (!selectedDate) {
+                    showNotification('Please select a pickup date.', 'error');
+                    return;
+                }
+                
+                if (!selectedTime) {
+                    showNotification('Please select a time slot.', 'error');
+                    return;
+                }
+                
+                // Create the order object
+                const customerName = name;
+                const customerEmail = email;
+                const customerAddress = address;
+                
+                // Get selected services
+                const orderServices = [];
+                selectedCards.forEach(card => {
+                    const serviceId = card.getAttribute('data-id');
+                    const serviceName = card.querySelector('.service-title').textContent;
+                    const servicePrice = parseFloat(card.getAttribute('data-price') || '0');
+                    
+                    // Get quantity (default to 1 if not specified)
+                    let quantity = 1;
+                    const quantityDisplay = card.querySelector('.quantity-display');
+                    if (quantityDisplay) {
+                        quantity = parseInt(quantityDisplay.textContent) || 1;
+                    }
+                    
+                    // Check for detailed items
+                    let items = [];
+                    const itemsData = card.getAttribute('data-items');
+                    if (itemsData) {
+                        try {
+                            items = JSON.parse(itemsData);
+                        } catch (e) {
+                            console.error("Error parsing items data:", e);
+                        }
+                    }
+                    
+                    orderServices.push({
+                        id: serviceId,
+                        name: serviceName,
+                        price: servicePrice,
+                        quantity: quantity,
+                        items: items
+                    });
+                });
+                
+                // Get pickup details
+                const pickupInstructions = document.getElementById('special-instructions').value;
+                
+                // Calculate subtotal
+                let subtotal = orderServices.reduce((sum, service) => sum + (service.price * service.quantity), 0);
+                
+                // Apply express fee if selected
+                if (document.querySelector('.service-card[data-id="5"].selected')) {
+                    subtotal *= 1.5;
+                }
+                
+                const tax = subtotal * 0.08; // 8% tax
+                const total = subtotal + tax;
+                
+                // Create the order object
+                const orderData = {
+                    customer: {
+                        name: customerName,
+                        email: customerEmail,
+                        phone: "Not provided", // Default value for phone
+                        address: customerAddress
+                    },
+                    services: orderServices.map(service => ({
+                        id: service.id,
+                        name: service.name,
+                        price: service.price,
+                        quantity: service.quantity,
+                        items: service.items // Include the items from the LaundryPopup
+                    })),
+                    pickup: {
+                        date: new Date(selectedDate),
+                        timeSlot: selectedTime,
+                        specialInstructions: pickupInstructions
+                    },
+                    subtotal: subtotal,
+                    tax: tax,
+                    total: total
+                };
+                
+                // Add Wash & Fold items from the LaundryPopupController if available
+                if (window.LaundryPopupController && window.LaundryPopupController.items) {
+                    const washFoldServiceIndex = orderServices.findIndex(s => s.id === "1"); // Wash & Fold has ID 1
+                    if (washFoldServiceIndex !== -1) {
+                        orderData.services[washFoldServiceIndex].items = window.LaundryPopupController.items;
+                        console.log("Adding Wash & Fold items to order:", window.LaundryPopupController.items);
+                    }
+                }
+                
+                // Save the order using OrderManager
+                try {
+                    // Ensure OrderManager is initialized
+                    if (typeof OrderManager === 'undefined') {
+                        console.error("OrderManager is not loaded!");
+                        showNotification('Error: Order system is not available. Please try again later.', 'error');
+                        return;
+                    }
+                    
+                    // Initialize OrderManager explicitly
+                    console.log("Initializing OrderManager for order creation");
+                    OrderManager.init();
+                    
+                    // Include socket reference if available
+                    if (socket && socket.connected) {
+                        console.log("Socket is connected, will use for real-time updates");
+                    } else {
+                        console.warn("Socket is not connected, will use fallback methods");
+                    }
+                    
+                    console.log("Creating new order with data:", orderData);
+                    const newOrder = OrderManager.createOrder(orderData);
+                    console.log("New order created:", newOrder);
+                    
+                    // Show confirmation with order ID
+                    document.getElementById('confirmationOrderId').textContent = newOrder.id;
+                    document.getElementById('trackOrderLink').href = `trackorder.html?orderId=${newOrder.id}`;
+                    document.getElementById('orderConfirmationModal').style.display = 'flex';
+                    
+                    // Hide the order form
+                    document.getElementById('confirm-card').classList.add('hidden');
+                    document.getElementById('success-card').classList.remove('hidden');
+                    document.getElementById('order-number').textContent = newOrder.id;
+                    
+                    // Try to send order to server via REST API as a fallback
+                    fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(newOrder)
+                    })
+                    .then(response => {
+                        console.log("Server response status:", response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Server response for new order:', data);
+                        showNotification('Order successfully submitted to server!', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error sending order to server:', error);
+                        showNotification('Order created locally but may not be visible to operators yet.', 'warning');
+                    });
+                } catch (error) {
+                    console.error("Error creating order:", error);
+                    showNotification('There was an error processing your order. Please try again.', 'error');
+                }
+            });
+            
+            // Close confirmation modal
+            document.getElementById('closeOrderConfirmation').addEventListener('click', function() {
+                document.getElementById('orderConfirmationModal').style.display = 'none';
+            });
+            
+            // Helper functions
+            function updateSelectionCount() {
+                const selectedCards = document.querySelectorAll('.service-card.selected');
+                const count = selectedCards.length;
+                document.querySelector('.selection-count').textContent = 
+                    count + (count === 1 ? ' service selected' : ' services selected');
+            }
+            
+            function updateOrderSummary() {
+                const summaryItems = document.getElementById('summary-items');
+                summaryItems.innerHTML = '';
+                
+                let total = 0;
+                
+                // Get all selected service cards
+                const selectedCards = document.querySelectorAll('.service-card.selected');
+                
+                selectedCards.forEach(card => {
+                    const serviceId = parseInt(card.dataset.id);
+                    const title = card.querySelector('.service-title').textContent;
+                    const price = parseFloat(card.getAttribute('data-price'));
+                    const unit = card.getAttribute('data-unit');
+                    
+                    if (unit !== 'multiplier') {
+                        const quantityDisplay = card.querySelector('.quantity-display');
+                        const quantity = quantityDisplay ? parseInt(quantityDisplay.textContent) : 1;
+                        const itemTotal = price * quantity;
+                        total += itemTotal;
+                        
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'summary-item';
+                        itemDiv.innerHTML = `
+                            <div>${title} (${quantity} ${quantity > 1 ? unit + 's' : unit})</div>
+                            <div>$${itemTotal.toFixed(2)}</div>
+                        `;
+                        summaryItems.appendChild(itemDiv);
+                    } else {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'summary-item';
+                        itemDiv.innerHTML = `
+                            <div>${title}</div>
+                            <div>+50% Rush Fee</div>
+                        `;
+                        summaryItems.appendChild(itemDiv);
+                    }
+                });
+                
+                // Apply express fee if Express Care is selected
+                if (document.querySelector('.service-card[data-id="5"].selected')) {
+                    total *= 1.5;
+                }
+                
+                document.getElementById('total-amount').textContent = total.toFixed(2);
+                document.getElementById('summary-date').textContent = selectedDate || 'Not selected';
+                
+                const selectedTimeElement = document.querySelector('.time-slot.selected');
+                document.getElementById('summary-time').textContent = selectedTimeElement ? selectedTimeElement.textContent : 'Not selected';
+            }
+            
+            // Helper function to show notifications
+            function showNotification(message, type = 'success') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '12px 20px';
+                notification.style.borderRadius = '8px';
+                notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+                notification.style.color = 'white';
+                notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                notification.style.zIndex = '9999';
+                notification.style.transform = 'translateX(120%)';
+                notification.style.transition = 'transform 0.3s ease-out';
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Show the notification
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 10);
+                
+                // Remove after a delay
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(120%)';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
+            
+            // Enhanced Calendar Functionality
+            const calendarDays = document.getElementById('calendar-days');
+            const currentMonthYearElement = document.getElementById('currentMonthYear');
+            const prevMonthButton = document.getElementById('prevMonth');
+            const nextMonthButton = document.getElementById('nextMonth');
+            
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+            
+            // Generate availability data (in a real app, this would come from the backend)
+            const availabilityData = {};
+            // Populate with random availability for demo
+            for (let i = 0; i < 90; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                const dateString = date.toISOString().split('T')[0];
+                const dayOfWeek = date.getDay();
+                
+                // Higher availability on weekdays, lower on weekends
+                let availability;
+                if (dayOfWeek === 0 || dayOfWeek === 6) { // Weekend
+                    availability = ['low', 'medium'][Math.floor(Math.random() * 2)];
+                } else if (dayOfWeek === 1 || dayOfWeek === 3) { // Monday or Wednesday
+                    availability = 'high';
+                } else {
+                    availability = ['medium', 'high'][Math.floor(Math.random() * 2)];
+                }
+                
+                availabilityData[dateString] = availability;
+            }
+            
+            // Function to display the calendar for a given month and year
+            function generateCalendar(month, year) {
+                // Clear calendar
+                calendarDays.innerHTML = '';
+                
+                // Update current month and year display
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                currentMonthYearElement.textContent = `${monthNames[month]} ${year}`;
+                
+                // Get first day of month and number of days in month
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Add empty cells for days before first day of month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'calendar-day empty';
+                    calendarDays.appendChild(emptyDay);
+                }
+                
+                // Add cells for each day in month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.textContent = day;
+                    
+                    const dateObj = new Date(year, month, day);
+                    const dateString = dateObj.toISOString().split('T')[0];
+                    
+                    // Create a fresh copy of today's date for comparison
+                    const todayMidnight = new Date();
+                    todayMidnight.setHours(0, 0, 0, 0);
+                    
+                    // Add classes based on conditions
+                    if (dateObj < todayMidnight) {
+                        dayElement.classList.add('past');
+                    } else {
+                        // Add availability indicator
+                        if (availabilityData[dateString]) {
+                            dayElement.classList.add(`${availabilityData[dateString]}-availability`);
+                        }
+                        
+                        // Add click event for future dates
+                        dayElement.addEventListener('click', function() {
+                            if (!this.classList.contains('past')) {
+                                // Remove selected class from all days
+                                document.querySelectorAll('.calendar-day.selected').forEach(day => {
+                                    day.classList.remove('selected');
+                                });
+                                
+                                // Add selected class to clicked day
+                                this.classList.add('selected');
+                                
+                                // Update selectedDate
+                                selectedDate = dateString;
+                                document.getElementById('pickup-date').value = selectedDate;
+                                
+                                // Update any UI that depends on selectedDate
+                                updateSelectedDateDisplay();
+                            }
+                        });
+                    }
+                    
+                    // Mark today
+                    if (dateObj.toDateString() === new Date().toDateString()) {
+                        dayElement.classList.add('today');
+                    }
+                    
+                    // Mark selected date
+                    if (selectedDate === dateString) {
+                        dayElement.classList.add('selected');
+                    }
+                    
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+            
+            // Initialize calendar
+            generateCalendar(currentMonth, currentYear);
+            
+            // Previous and next month buttons
+            prevMonthButton.addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                generateCalendar(currentMonth, currentYear);
+            });
+            
+            nextMonthButton.addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                generateCalendar(currentMonth, currentYear);
+            });
+            
+            // Quick date selections
+            document.querySelectorAll('.quick-date').forEach(quickDate => {
+                quickDate.addEventListener('click', function() {
+                    const daysToAdd = parseInt(this.getAttribute('data-days'));
+                    const newDate = new Date();
+                    newDate.setDate(newDate.getDate() + daysToAdd);
+                    
+                    // Format the date to YYYY-MM-DD
+                    const dateString = newDate.toISOString().split('T')[0];
+                    selectedDate = dateString;
+                    document.getElementById('pickup-date').value = selectedDate;
+                    
+                    // Update UI
+                    updateSelectedDateDisplay();
+                    
+                    // Show the correct month in calendar
+                    if (newDate.getMonth() !== currentMonth || newDate.getFullYear() !== currentYear) {
+                        currentMonth = newDate.getMonth();
+                        currentYear = newDate.getFullYear();
+                        generateCalendar(currentMonth, currentYear);
+                    }
+                    
+                    // Find and select the day in the calendar
+                    document.querySelectorAll('.calendar-day').forEach(day => {
+                        day.classList.remove('selected');
+                        if (!day.classList.contains('empty') && parseInt(day.textContent) === newDate.getDate()) {
+                            day.classList.add('selected');
+                        }
+                    });
+                    
+                    // Highlight the clicked quick date
+                    document.querySelectorAll('.quick-date').forEach(qd => {
+                        qd.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Special date cards
+            document.querySelectorAll('.special-date-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const dateString = this.getAttribute('data-date');
+                    const dateObj = new Date(dateString);
+                    
+                    selectedDate = dateString;
+                    document.getElementById('pickup-date').value = selectedDate;
+                    
+                    // Update UI
+                    updateSelectedDateDisplay();
+                    
+                    // Show the correct month in calendar
+                    if (dateObj.getMonth() !== currentMonth || dateObj.getFullYear() !== currentYear) {
+                        currentMonth = dateObj.getMonth();
+                        currentYear = dateObj.getFullYear();
+                        generateCalendar(currentMonth, currentYear);
+                    }
+                    
+                    // Find and select the day in the calendar
+                    document.querySelectorAll('.calendar-day').forEach(day => {
+                        day.classList.remove('selected');
+                        if (!day.classList.contains('empty') && parseInt(day.textContent) === dateObj.getDate()) {
+                            day.classList.add('selected');
+                        }
+                    });
+                });
+            });
+            
+            // Update date display in summary and other places
+            function updateSelectedDateDisplay() {
+                if (selectedDate) {
+                    const dateObj = new Date(selectedDate);
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const formattedDate = dateObj.toLocaleDateString('en-US', options);
+                    
+                    // Update any UI elements that show the selected date
+                    if (document.getElementById('summary-date')) {
+                        document.getElementById('summary-date').textContent = formattedDate;
+                    }
+                }
+            }
+            
+            // Original date selection event (keep for compatibility)
+            document.getElementById('pickup-date').addEventListener('change', function() {
+                selectedDate = this.value;
+                updateSelectedDateDisplay();
+            });
+            
+            // Time selection - just reuse the existing code, don't redeclare the variable
+            /* Original time selection code - this part is already defined elsewhere
+            const timeSlots = document.querySelectorAll('.time-slot:not(.unavailable)');
+            timeSlots.forEach(slot => {
+                // Existing code for time selection
+                // ...
+            });
+            */
+            
+            // Update dynamically generated special dates to current year and month
+            function updateSpecialDates() {
+                const specialDateCards = document.querySelectorAll('.special-date-card');
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear();
+                const currentMonth = currentDate.getMonth();
+                
+                // Sample special days of week: Mondays and Wednesdays
+                const specialDays = [1, 3]; // Monday and Wednesday
+                
+                specialDateCards.forEach((card, index) => {
+                    // Find upcoming dates for the special days
+                    let targetDate = new Date(currentYear, currentMonth, 1);
+                    
+                    // Find next date with the desired day of week
+                    while (targetDate.getDay() !== specialDays[index % 2] || targetDate < currentDate) {
+                        targetDate.setDate(targetDate.getDate() + 1);
+                    }
+                    
+                    // Add additional offset for later cards
+                    if (index >= 2) {
+                        targetDate.setDate(targetDate.getDate() + 7);
+                    }
+                    
+                    const dateString = targetDate.toISOString().split('T')[0];
+                    const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+                    const formattedDate = targetDate.toLocaleDateString('en-US', options);
+                    const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'long' });
+                    const datePart = targetDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    
+                    // Update card
+                    card.setAttribute('data-date', dateString);
+                    card.querySelector('.special-date-day').textContent = dayName;
+                    card.querySelector('.special-date-date').textContent = datePart;
+                });
+            }
+            
+            // Call on page load
+            updateSpecialDates();
+            
+            // Add sparkle effect on header click
+            const header = document.querySelector('.creative-header');
+            if (header) {
+                header.addEventListener('click', createSparkles);
+            }
+            
+            function createSparkles(e) {
+                const numberOfSparkles = 15;
+                const headerRect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - headerRect.left;
+                const y = e.clientY - headerRect.top;
+                
+                for (let i = 0; i < numberOfSparkles; i++) {
+                    createSparkle(x, y, headerRect);
+                }
+            }
+            
+            function createSparkle(x, y, headerRect) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                
+                // Random position around click
+                const offsetX = (Math.random() - 0.5) * 100;
+                const offsetY = (Math.random() - 0.5) * 100;
+                
+                sparkle.style.left = (x + offsetX) + 'px';
+                sparkle.style.top = (y + offsetY) + 'px';
+                
+                // Random size
+                const size = Math.random() * 6 + 6;
+                sparkle.style.width = size + 'px';
+                sparkle.style.height = size + 'px';
+                
+                // Random color
+                const colors = ['#ff6b6b', '#3dbdbd', '#ffd166', '#c5f1f1'];
+                sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Add to header
+                document.querySelector('.creative-header').appendChild(sparkle);
+                
+                // Animation
+                sparkle.style.animation = 'sparkleAnimation 0.8s forwards';
+                
+                // Remove sparkle after animation is complete
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 800);
+            }
+            
+            // Position the menu indicator
+            const menuIndicator = document.querySelector('.menu-indicator');
+            const activeMenuItem = document.querySelector('nav ul li.active a');
+            
+            function positionMenuIndicator() {
+                if (menuIndicator && activeMenuItem) {
+                    const linkRect = activeMenuItem.getBoundingClientRect();
+                    menuIndicator.style.width = `${linkRect.width}px`;
+                    menuIndicator.style.left = `${linkRect.left}px`;
+                }
+            }
+            
+            // Position on load
+            positionMenuIndicator();
+            
+            // Reposition on resize
+            window.addEventListener('resize', positionMenuIndicator);
+            
+            // Hover effects for menu items
+            const menuItems = document.querySelectorAll('nav ul li a');
+            menuItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    if (menuIndicator) {
+                        const linkRect = this.getBoundingClientRect();
+                        menuIndicator.style.width = `${linkRect.width}px`;
+                        menuIndicator.style.left = `${linkRect.left}px`;
+                    }
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    positionMenuIndicator();
+                });
+            });
+            
+            // Typing effect for welcome message
+            const typingTextElement = document.querySelector('.typing-effect');
+            
+            if (typingTextElement) {
+                const messages = [
+                    "Create your order",
+                    "Fresh & clean clothes",
+                    "Professional service",
+                    "Quick turnaround",
+                    "Easy scheduling"
+                ];
+                
+                let messageIndex = 0;
+                let charIndex = 0;
+                let isDeleting = false;
+                let typingSpeed = 100;
+                
+                function typeText() {
+                    const currentMessage = messages[messageIndex];
+                    
+                    if (isDeleting) {
+                        typingTextElement.textContent = currentMessage.substring(0, charIndex - 1);
+                        charIndex--;
+                        typingSpeed = 50;
+                    } else {
+                        typingTextElement.textContent = currentMessage.substring(0, charIndex + 1);
+                        charIndex++;
+                        typingSpeed = 100;
+                    }
+                    
+                    if (!isDeleting && charIndex === currentMessage.length) {
+                        // Pause at the end of typing
+                        isDeleting = true;
+                        typingSpeed = 1500;
+                    } else if (isDeleting && charIndex === 0) {
+                        isDeleting = false;
+                        messageIndex = (messageIndex + 1) % messages.length;
+                        // Pause before typing new message
+                        typingSpeed = 500;
+                    }
+                    
+                    setTimeout(typeText, typingSpeed);
+                }
+                
+                // Start the typing effect
+                setTimeout(typeText, 1000);
+            }
+        });
+    </script>
+    
+    <script type="text/babel">
+        // LaundryPopup React Component
+        const LaundryPopup = ({ isOpen, onClose, onDone }) => {
+            const [items, setItems] = React.useState({
+                'Blanket': 0,
+                'Bed Sheet': 0,
+                'Pillow Cover': 0,
+                'Shorts': 0,
+                'Nikkar': 0,
+                'Lower': 0,
+                'Civil Shirt': 0,
+                'School T-Shirt': 0,
+                'Jeans': 0,
+                'School Pant': 0,
+                'Sweater': 0,
+                'Shoes': 0,
+                'Civil T-Shirt': 0,
+                'Jacket': 0,
+                'Coat': 0
+            });
+
+            const handleIncrement = (itemName) => {
+                setItems({
+                    ...items,
+                    [itemName]: items[itemName] + 1
+                });
+            };
+
+            const handleDecrement = (itemName) => {
+                if (items[itemName] > 0) {
+                    setItems({
+                        ...items,
+                        [itemName]: items[itemName] - 1
+                    });
+                }
+            };
+
+            const totalItems = Object.values(items).reduce((sum, count) => sum + count, 0);
+
+            return (
+                <div className={`modal-overlay ${isOpen ? '' : 'hidden'}`} style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: isOpen ? 'flex' : 'none',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1050
+                }}>
+                    <div className="laundry-popup" style={{
+                        backgroundColor: 'white',
+                        borderRadius: '12px',
+                        width: '90%',
+                        maxWidth: '800px',
+                        maxHeight: '90vh',
+                        overflowY: 'auto',
+                        boxShadow: '0 5px 15px rgba(0,0,0,0.3)'
+                    }}>
+                        <div className="laundry-popup-header" style={{
+                            padding: '20px',
+                            borderBottom: '1px solid #eee',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <h3 style={{ margin: 0 }}>
+                                <i className="fas fa-tshirt" style={{ marginRight: '10px', color: '#3dbdbd' }}></i>
+                                Select Laundry Items
+                            </h3>
+                            <button onClick={onClose} style={{
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '24px',
+                                cursor: 'pointer'
+                            }}>&times;</button>
+                        </div>
+                        
+                        <div style={{ padding: '20px' }}>
+                            <p style={{ marginBottom: '20px' }}>
+                                Please specify the quantity for each item you're including in your wash & fold service:
+                            </p>
+                            
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                                gap: '15px',
+                                marginBottom: '30px'
+                            }}>
+                                {Object.keys(items).map(itemName => (
+                                    <div key={itemName} style={{
+                                        backgroundColor: '#f8f9fa',
+                                        borderRadius: '8px',
+                                        padding: '15px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                    }}>
+                                        <div style={{ fontWeight: 600, marginBottom: '10px' }}>{itemName}</div>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <button onClick={() => handleDecrement(itemName)} style={{
+                                                width: '30px',
+                                                height: '30px',
+                                                borderRadius: '50%',
+                                                border: '1px solid #ddd',
+                                                background: 'white',
+                                                cursor: 'pointer'
+                                            }}>-</button>
+                                            
+                                            <span style={{ fontWeight: 600 }}>{items[itemName]}</span>
+                                            
+                                            <button onClick={() => handleIncrement(itemName)} style={{
+                                                width: '30px',
+                                                height: '30px',
+                                                borderRadius: '50%',
+                                                border: '1px solid #ddd',
+                                                background: 'white',
+                                                cursor: 'pointer'
+                                            }}>+</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginTop: '20px',
+                                paddingTop: '20px',
+                                borderTop: '1px solid #eee'
+                            }}>
+                                <div>
+                                    <strong>Total items: </strong> 
+                                    <span style={{ 
+                                        display: 'inline-block',
+                                        padding: '5px 15px',
+                                        borderRadius: '20px',
+                                        backgroundColor: '#3dbdbd',
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        marginLeft: '10px'
+                                    }}>{totalItems}</span>
+                                </div>
+                                
+                                <div>
+                                    <button onClick={onClose} style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '30px',
+                                        border: '1px solid #ddd',
+                                        background: 'white',
+                                        marginRight: '10px',
+                                        cursor: 'pointer'
+                                    }}>Cancel</button>
+                                    
+                                    <button onClick={() => onDone(items)} style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '30px',
+                                        border: 'none',
+                                        background: '#3dbdbd',
+                                        color: 'white',
+                                        fontWeight: 600,
+                                        cursor: 'pointer'
+                                    }}>Done</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Create a controller to manage the popup state
+        window.LaundryPopupController = {
+            isOpen: false,
+            open: function() {
+                this.isOpen = true;
+                this.render();
+            },
+            close: function() {
+                this.isOpen = false;
+                this.render();
+            },
+            handleDone: function(items) {
+                // Calculate total items
+                const totalItems = Object.values(items).reduce((sum, count) => sum + count, 0);
+                
+                // Update the Wash & Fold service card with the items data
+                const washFoldCard = document.querySelector('.service-card[data-id="1"]');
+                if (washFoldCard) {
+                    // Store the items data on the card for order processing
+                    washFoldCard.setAttribute('data-items', JSON.stringify(items));
+                    
+                    // Update the quantity display if it exists
+                    const quantityDisplay = washFoldCard.querySelector('.quantity-display');
+                    if (quantityDisplay && totalItems > 0) {
+                        quantityDisplay.textContent = totalItems;
+                    }
+                }
+                
+                this.close();
+                
+                // Optionally show a confirmation message
+                if (totalItems > 0) {
+                    showNotification(`${totalItems} items added to your Wash & Fold order!`, 'success');
+                }
+            },
+            render: function() {
+                const root = document.getElementById('laundry-popup-root');
+                if (!root) return;
+                
+                ReactDOM.render(
+                    <LaundryPopup
+                        isOpen={this.isOpen}
+                        onClose={() => this.close()}
+                        onDone={(items) => this.handleDone(items)}
+                    />,
+                    root
+                );
+            },
+            init: function() {
+                this.render();
+            }
+        };
+
+        // Initialize the controller when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            window.LaundryPopupController.init();
+        });
+    </script>
+
+    <!-- Helper function to show notifications if not already defined -->
+    <script>
+        // This ensures the notification function exists even if not defined elsewhere
+        if (typeof showNotification !== 'function') {
+            window.showNotification = function(message, type = 'success') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '12px 20px';
+                notification.style.borderRadius = '8px';
+                notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+                notification.style.color = 'white';
+                notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                notification.style.zIndex = '9999';
+                notification.style.transform = 'translateX(120%)';
+                notification.style.transition = 'transform 0.3s ease-out';
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Show the notification
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 10);
+                
+                // Remove after a delay
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(120%)';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            };
+        }
+    </script>
+    
+    <!-- React Components -->
+    <div id="laundry-popup-root"></div>
+    
+    <!-- Order Confirmation Modal -->
+    <div class="modal-overlay" id="orderConfirmationModal" style="display:none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle" style="color:#4CAF50;"></i> Order Placed Successfully!</h3>
+                <button class="modal-close" id="closeOrderConfirmation">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Thank you for your order! Your laundry service has been scheduled.</p>
+                <div class="order-confirmation-details">
+                    <p><strong>Order ID:</strong> <span id="confirmationOrderId" style="font-weight:bold;color:#3498db;"></span></p>
+                    <p>You can track your order status using this ID.</p>
+                </div>
+                <div class="action-buttons" style="display:flex;gap:10px;margin-top:20px;">
+                    <a href="#" id="trackOrderLink" class="btn btn-primary" style="flex:1;text-align:center;">
+                        <i class="fas fa-search"></i> Track Order
+                    </a>
+                    <a href="laundary.html" class="btn btn-secondary" style="flex:1;text-align:center;">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

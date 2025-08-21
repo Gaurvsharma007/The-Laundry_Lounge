@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Solution for Laundry Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h1 {
+            color: #3dbdbd;
+            border-bottom: 2px solid #3dbdbd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3dbdbd;
+            margin-top: 30px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        .alert {
+            background-color: #fff8e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .solution {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .steps {
+            margin-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #3dbdbd;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #299f9f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Solution for Laundry Service</h1>
+    
+    <div class="alert">
+        <h3>Issue Identified</h3>
+        <p>The authentication system was failing because the <code>jsonwebtoken</code> dependency was not installed or accessible in your Node.js environment.</p>
+        <p>Error: <code>Cannot find module 'jsonwebtoken'</code></p>
+    </div>
+    
+    <div class="solution">
+        <h3>Solution Provided</h3>
+        <p>Three alternative solutions have been implemented:</p>
+        <ol>
+            <li><strong>Modified server.js</strong> - Removed the dependency on jsonwebtoken and created a custom token system using Node's built-in crypto module.</li>
+            <li><strong>Created simple-auth-server.php</strong> - A PHP alternative that provides the same authentication endpoints.</li>
+            <li><strong>Created simple-auth.js</strong> - A pure client-side authentication system that works entirely in the browser with no server requirements.</li>
+        </ol>
+    </div>
+
+    <h2>Quick Solution: Browser-Only Authentication</h2>
+    
+    <p>The simplest way to get started is with the client-side authentication system:</p>
+    
+    <ol class="steps">
+        <li>Open <a href="simple-auth-demo.html">simple-auth-demo.html</a> in your browser</li>
+        <li>You can register, login, and logout entirely in the browser</li>
+        <li>All user data is stored in your browser's localStorage</li>
+        <li>There's already a demo user: <code>demo@example.com</code> with password <code>password</code></li>
+    </ol>
+    
+    <a href="simple-auth-demo.html" class="btn">Try the Demo Now</a>
+    
+    <h2>Server-Side Solutions</h2>
+    
+    <p>If you prefer to use a server-side solution, you have these options:</p>
+    
+    <h3>Option 1: Using Modified Node.js Server</h3>
+    <ol class="steps">
+        <li>The <code>server.js</code> file has been updated to use Node.js built-in crypto module instead of jsonwebtoken.</li>
+        <li>The <code>package.json</code> has been updated to remove the jsonwebtoken dependency.</li>
+        <li>If you have Node.js installed, you can run: <code>node server.js</code> to start the server.</li>
+    </ol>
+    
+    <h3>Option 2: Using PHP Server</h3>
+    <ol class="steps">
+        <li>If PHP is installed on your system, you can use the PHP alternative.</li>
+        <li>Start the PHP server with: <code>php -S localhost:3000 simple-auth-server.php</code></li>
+        <li>Use the authentication endpoints as described below</li>
+    </ol>
+    
+    <h2>Authentication Endpoints</h2>
+    
+    <h3>1. Register a New User</h3>
+    <pre><code>POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "phone": "1234567890",
+  "password": "password123"
+}</code></pre>
+    
+    <h3>2. Login</h3>
+    <pre><code>POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}</code></pre>
+    
+    <h3>3. Get Current User (Protected)</h3>
+    <pre><code>GET /api/auth/me
+Authorization: Bearer your_token_here</code></pre>
+    
+    <h2>Using the Authentication in Frontend</h2>
+    
+    <p>The frontend authentication code in <code>users.js</code> works with both server solutions. It handles:</p>
+    <ul>
+        <li>User registration with validation</li>
+        <li>Login/logout functionality</li>
+        <li>Session management using localStorage</li>
+        <li>UI updates based on authentication state</li>
+    </ul>
+    
+    <h3>Example Usage</h3>
+    <pre><code>// Register a new user
+UserManager.register({
+  firstName: "John",
+  lastName: "Doe",
+  email: "john@example.com",
+  phone: "1234567890",
+  password: "password123",
+  confirmPassword: "password123"
+});
+
+// Login
+UserManager.login({
+  email: "john@example.com",
+  password: "password123"
+});
+
+// Check if user is logged in
+if (UserManager.isLoggedIn()) {
+  // Do something for authenticated users
+}
+
+// Get current user
+const currentUser = UserManager.getCurrentUser();
+
+// Logout
+UserManager.logout();</code></pre>
+    
+    <h2>Troubleshooting</h2>
+    
+    <p>If you continue to experience issues:</p>
+    <ol class="steps">
+        <li>Use the client-side simple-auth.js solution which has no dependencies</li>
+        <li>Check your Node.js installation: <code>node --version</code></li>
+        <li>Try installing Node.js from <a href="https://nodejs.org/">nodejs.org</a></li>
+        <li>Manually install jsonwebtoken: <code>npm install jsonwebtoken</code></li>
+        <li>Ensure all files have proper read/write permissions</li>
+    </ol>
+    
+    <h2>Files Provided</h2>
+    
+    <ul>
+        <li><strong>server.js</strong> - Modified Node.js server that doesn't require jsonwebtoken</li>
+        <li><strong>simple-auth-server.php</strong> - PHP alternative server</li>
+        <li><strong>simple-auth.js</strong> - Client-side authentication system</li>
+        <li><strong>simple-auth-demo.html</strong> - Demo of the client-side authentication</li>
+        <li><strong>auth-solution.html</strong> - This documentation</li>
+    </ul>
+</body>
+</html> 

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshThreads Laundry Service - Login Tools</title>
+    <script src="simple-auth.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #3dbdbd;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            color: #3dbdbd;
+            margin-top: 0;
+        }
+        .card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .card a {
+            display: inline-block;
+            background-color: #3dbdbd;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .card a:hover {
+            background-color: #299f9f;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>FreshThreads Laundry Service</h1>
+    
+    <div class="warning">
+        <strong>Important:</strong> This page contains tools to help debug and fix login issues.
+    </div>
+    
+    <h2>Login Pages</h2>
+    <div class="card-container">
+        <div class="card">
+            <h3>Main Login</h3>
+            <p>The main login page for the laundry service. Use this to sign in normally.</p>
+            <a href="laundary.html">Go to Main Page</a>
+        </div>
+        
+        <div class="card">
+            <h3>Styled Login</h3>
+            <p>The styled login page with freshthreads branding.</p>
+            <a href="freshthreads-login.html">Go to Styled Login</a>
+        </div>
+        
+        <div class="card">
+            <h3>Simple Login</h3>
+            <p>A simplified login page that works with SimpleAuth.</p>
+            <a href="simple-login.html">Go to Simple Login</a>
+        </div>
+        
+        <div class="card">
+            <h3>Basic Login</h3>
+            <p>A minimal login page with debug information.</p>
+            <a href="basic-login.html">Go to Basic Login</a>
+        </div>
+    </div>
+    
+    <h2>Debug Tools</h2>
+    <div class="card-container">
+        <div class="card">
+            <h3>Reset Demo User</h3>
+            <p>Reset the demo user to fix login issues.</p>
+            <a href="reset-user.html">Reset User</a>
+        </div>
+        
+        <div class="card">
+            <h3>LocalStorage Inspector</h3>
+            <p>View and manage the contents of localStorage.</p>
+            <a href="storage-debug.html">View LocalStorage</a>
+        </div>
+        
+        <div class="card">
+            <h3>Login Test</h3>
+            <p>Test the SimpleAuth login functionality.</p>
+            <a href="login-test.html">Test Login</a>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Index page loaded');
+            
+            // Check if SimpleAuth is available
+            if (typeof SimpleAuth !== 'undefined') {
+                console.log('SimpleAuth is available');
+                console.log('Logged in:', SimpleAuth.isLoggedIn());
+            } else {
+                console.log('SimpleAuth is NOT available');
+            }
+        });
+    </script>
+</body>
+</html> 

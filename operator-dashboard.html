@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Laundry service operator dashboard for managing customer orders">
+    <meta name="theme-color" content="#3dbdbd">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons and CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="orders.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <title>Operator Dashboard | The Laundry Lounge</title>
+    
+    <style>
+        :root {
+            /* Colors */
+            --primary: #3dbdbd;
+            --primary-dark: #2a9d9d;
+            --primary-light: #c5f1f1;
+            --secondary: #ff6b6b;
+            --accent: #ffd166;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196f3;
+            
+            /* Neutrals */
+            --bg-light: #f7fafc;
+            --bg-dark: #1a202c;
+            --text-dark: #2d3748;
+            --text-light: #a0aec0;
+            --text-muted: #718096;
+            --border-light: #e2e8f0;
+            
+            /* UI */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.03);
+            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
+            
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.5rem;
+            --border-radius-lg: 0.75rem;
+            --border-radius-xl: 1rem;
+            
+            --transition: all 0.3s ease;
+            --transition-slow: all 0.5s ease;
+        }
+        
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.5;
+            overflow-x: hidden;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Layout Styles */
+        .dash-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        .dash-sidebar {
+            width: 260px;
+            background: white;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        .dash-sidebar-collapsed {
+            transform: translateX(-220px);
+        }
+        
+        .dash-main {
+            flex: 1;
+            margin-left: 260px;
+            transition: margin 0.3s ease;
+            padding: 2rem;
+            background-color: var(--bg-light);
+        }
+        
+        .dash-main-expanded {
+            margin-left: 40px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .sidebar-logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-collapse-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-light);
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-left: auto;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .sidebar-collapse-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .sidebar-nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 0.75rem;
+            position: relative;
+        }
+        
+        .sidebar-nav-item:hover {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+        
+        .sidebar-nav-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+        
+        .sidebar-nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--primary);
+        }
+        
+        .sidebar-nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-nav-label {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sidebar-nav-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        /* Dashboard Header */
+        .dash-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .dash-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .dash-subtitle {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+        }
+        
+        .stat-label {
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0.5rem 0;
+        }
+        
+        .stat-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .stat-change.positive {
+            color: var(--success);
+        }
+        
+        .stat-change.negative {
+            color: var(--danger);
+        }
+        
+        /* Order Tab Navigation */
+        .order-tabs {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 0.25rem;
+            display: flex;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-light);
+        }
+        
+        .order-tab {
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            flex: 1;
+            text-align: center;
+            border: none;
+            background: transparent;
+            outline: none;
+        }
+        
+        .order-tab:hover {
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+        
+        .order-tab.active {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .order-tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+        
+        /* Orders Grid */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .order-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        
+        .order-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+        
+        .order-card-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .order-id {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .order-status {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .order-card-body {
+            padding: 1rem;
+        }
+        
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .order-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .order-info-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        
+        .order-info-value {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .order-card-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .order-action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+            background-color: white;
+            color: var(--text-dark);
+            flex: 1;
+        }
+        
+        .order-action-btn:hover {
+            background-color: var(--bg-light);
+        }
+        
+        .order-action-btn.primary {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-light);
+        }
+        
+        .order-action-btn.primary:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Status Colors */
+        .status-pending {
+            background-color: #fffbeb;
+            color: #92400e;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .status-processing {
+            background-color: #f0f9ff;
+            color: #0c4a6e;
+            border-left: 3px solid #0ea5e9;
+        }
+        
+        .status-cleaning {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border-left: 3px solid #10b981;
+        }
+        
+        .status-quality_check {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .status-ready {
+            background-color: #faf5ff;
+            color: #5b21b6;
+            border-left: 3px solid #8b5cf6;
+        }
+        
+        .status-out_for_delivery {
+            background-color: #fff7ed;
+            color: #9a3412;
+            border-left: 3px solid #f97316;
+        }
+        
+        .status-delivered {
+            background-color: #f0fdf4;
+            color: #166534;
+            border-left: 3px solid #22c55e;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state-description {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .dash-sidebar {
+                transform: translateX(-260px);
+            }
+            
+            .dash-main {
+                margin-left: 0;
+            }
+            
+            .dash-sidebar-active {
+                transform: translateX(0);
+            }
+            
+            .sidebar-header {
+                padding: 1rem;
+            }
+            
+            .sidebar-logo {
+                font-size: 1.25rem;
+            }
+        }
+        
+        /* Tab Pane Styles */
+        .tab-pane {
+            display: none !important;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tab-pane.show.active {
+            display: block !important;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="dash-container">
+        <!-- Sidebar -->
+        <div class="dash-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Laundry Lounge</span>
+                </div>
+                <button class="sidebar-collapse-btn" id="sidebarCollapseBtn">
+                    <i class="fas fa-chevron-left"></i>
+            </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <a href="laundary.html" class="sidebar-nav-item">
+                    <div class="sidebar-nav-icon"><i class="fas fa-home"></i></div>
+                    <div class="sidebar-nav-label">Home</div>
+                </a>
+                
+                <a href="operator-dashboard.html" class="sidebar-nav-item active">
+                    <div class="sidebar-nav-icon"><i class="fas fa-th-large"></i></div>
+                    <div class="sidebar-nav-label">Dashboard</div>
+                </a>
+                
+                <a href="neworder.html" class="sidebar-nav-item">
+                    <div class="sidebar-nav-icon"><i class="fas fa-plus-circle"></i></div>
+                    <div class="sidebar-nav-label">New Order</div>
+                </a>
+                
+                <a href="#" class="sidebar-nav-item" id="navActiveOrders">
+                    <div class="sidebar-nav-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="sidebar-nav-label">Active Orders</div>
+                    <div class="sidebar-nav-badge" id="nav-active-count">0</div>
+                </a>
+                
+                <a href="#" class="sidebar-nav-item" id="navCompletedOrders">
+                    <div class="sidebar-nav-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="sidebar-nav-label">Completed</div>
+                </a>
+                
+                <a href="trackorder.html" class="sidebar-nav-item">
+                    <div class="sidebar-nav-icon"><i class="fas fa-search"></i></div>
+                    <div class="sidebar-nav-label">Track Order</div>
+                </a>
+                
+                <a href="#" class="sidebar-nav-item">
+                    <div class="sidebar-nav-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="sidebar-nav-label">Reports</div>
+                </a>
+                
+                <a href="operator-customers.html" class="sidebar-nav-item">
+                    <div class="sidebar-nav-icon"><i class="fas fa-users"></i></div>
+                    <div class="sidebar-nav-label">Customers</div>
+                </a>
+                
+                <a href="#" class="sidebar-nav-item">
+                    <div class="sidebar-nav-icon"><i class="fas fa-cog"></i></div>
+                    <div class="sidebar-nav-label">Settings</div>
+                </a>
+        </div>
+        </div>
+    
+    <!-- Main Content -->
+        <div class="dash-main">
+            <!-- Dashboard Header -->
+            <div class="dash-header">
+                <div>
+                    <h1 class="dash-title">Operator Dashboard</h1>
+                    <p class="dash-subtitle">Manage orders and monitor laundry operations</p>
+                </div>
+                <div>
+                    <button type="button" class="order-action-btn primary" id="refreshOrdersBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background-color: #eff6ff; color: #1e40af;">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-label">Active Orders</div>
+                    </div>
+                    <div class="stat-value" id="stats-active-count">0</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% from last week
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background-color: #f0fdf4; color: #166534;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-label">Completed Today</div>
+                    </div>
+                    <div class="stat-value" id="stats-completed-today">0</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 8% from yesterday
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background-color: #fff7ed; color: #9a3412;">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="stat-label">Out for Delivery</div>
+                    </div>
+                    <div class="stat-value" id="stats-delivery-count">0</div>
+                    <div class="stat-change">
+                        <i class="fas fa-minus"></i> Same as yesterday
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background-color: #faf5ff; color: #5b21b6;">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="stat-label">Items Processed</div>
+                    </div>
+                    <div class="stat-value" id="stats-items-count">0</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 15% from last week
+                    </div>
+            </div>
+        </div>
+        
+        <!-- Order Tabs -->
+            <div class="order-tabs">
+                <button class="order-tab active" id="active-orders-tab" data-target="active-orders">
+                    Active Orders <span class="order-tab-badge" id="active-count">0</span>
+                </button>
+                <button class="order-tab" id="completed-orders-tab" data-target="completed-orders">
+                    Completed <span class="order-tab-badge" id="completed-count">0</span>
+                </button>
+                <button class="order-tab" id="all-orders-tab" data-target="all-orders">
+                    All Orders <span class="order-tab-badge" id="all-count">0</span>
+                </button>
+            </div>
+        
+        <!-- Tab Content -->
+            <div class="tab-content">
+            <!-- Active Orders -->
+                <div class="tab-pane show active" id="active-orders">
+                    <div class="orders-grid" id="active-orders-container">
+                    <!-- Active orders will be loaded here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Completed Orders -->
+                <div class="tab-pane" id="completed-orders">
+                    <div class="orders-grid" id="completed-orders-container">
+                    <!-- Completed orders will be loaded here dynamically -->
+                </div>
+            </div>
+            
+            <!-- All Orders -->
+                <div class="tab-pane" id="all-orders">
+                    <div class="orders-grid" id="all-orders-container">
+                    <!-- All orders will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Status Update Modal -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: var(--border-radius-lg); overflow: hidden; box-shadow: var(--shadow-lg), 0 10px 40px rgba(0,0,0,0.15); border: none; background: white;">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-bottom: none; padding: 1.5rem;">
+                    <h5 class="modal-title" id="updateStatusModalLabel" style="color: white; font-weight: 600; letter-spacing: 0.025em; font-size: 1.25rem;">Update Order Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none; opacity: 0.8; transition: all 0.2s ease;">
+                        <i class="fas fa-times" style="color: white; font-size: 1.25rem;"></i>
+                    </button>
+                </div>
+                
+                <div class="modal-body" style="padding: 2rem 1.5rem; background: white;">
+                    <div style="margin-bottom: 2rem; position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Order ID</div>
+                                <div style="font-size: 1.25rem; font-weight: 700; color: var(--text-dark);" id="modal-order-id"></div>
+                            </div>
+                            
+                            <div style="text-align: right;">
+                                <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Current Status</div>
+                                <span class="order-status" id="modal-current-status" style="font-size: 0.85rem; padding: 0.5rem 0.75rem; font-weight: 600; display: inline-block;"></span>
+                            </div>
+                        </div>
+                        
+                        <div style="position: absolute; height: 1px; left: 0; right: 0; bottom: -1rem; background: linear-gradient(to right, transparent, var(--border-light) 20%, var(--border-light) 80%, transparent);"></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 0.5rem;">
+                        <label for="status-select" class="form-label" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.75rem; font-size: 0.95rem;">Select New Status:</label>
+                        <div style="position: relative;">
+                            <select class="form-select" id="status-select" style="border-radius: var(--border-radius); padding: 0.85rem 1rem; border: 1px solid var(--border-light); background-color: white; font-weight: 500; appearance: none; box-shadow: var(--shadow-sm); transition: all 0.2s ease;">
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="cleaning">Cleaning</option>
+                                <option value="quality_check">Quality Check</option>
+                                <option value="ready">Ready for Delivery</option>
+                                <option value="out_for_delivery">Out for Delivery</option>
+                                <option value="delivered">Delivered</option>
+                            </select>
+                            <div style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted);">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <i class="fas fa-info-circle"></i> 
+                            Updating status will notify the customer automatically.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer" style="border-top: none; padding: 0 1.5rem 1.5rem; background: white; justify-content: space-between;">
+                    <button type="button" class="order-action-btn" data-bs-dismiss="modal" style="background-color: transparent; border: 1px solid var(--border-light); border-radius: var(--border-radius); padding: 0.75rem 1.25rem; transition: all 0.2s ease; font-weight: 500;">
+                        Cancel
+                    </button>
+                    <button type="button" class="order-action-btn primary" id="save-status-btn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: var(--border-radius); padding: 0.75rem 1.5rem; transition: all 0.2s ease; font-weight: 600; box-shadow: 0 4px 12px rgba(61, 189, 189, 0.2);">
+                        <i class="fas fa-check mr-2" style="margin-right: 0.5rem;"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Operator Dashboard initializing...");
+            
+            // Ensure OrderManager is initialized
+            if (typeof OrderManager === 'undefined') {
+                console.error("OrderManager is not loaded! Please check that orders.js is included in the page.");
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Order management system is not available. Please try again later.',
+                    icon: 'error',
+                    confirmButtonColor: 'var(--primary)'
+                });
+                return;
+            }
+            
+            // Initialize OrderManager
+            OrderManager.init();
+            
+            // Connect to socket.io server
+            let socket;
+            try {
+                socket = io();
+            
+            // Listen for order created event
+            socket.on('orderCreated', function(newOrder) {
+                console.log('New order received from server:', newOrder);
+                
+                // Check if order already exists in local storage
+                const existingOrder = OrderManager.getOrderById(newOrder.id);
+                if (!existingOrder) {
+                    // Add the new order to local storage
+                    OrderManager.createOrder(newOrder);
+                    
+                    // Show notification
+                        showNotification('New Order', `Order #${newOrder.id} has been received.`, 'success');
+                    
+                    // Reload orders to reflect changes
+                    loadOrders();
+                }
+            });
+            
+            // Listen for order updated event
+            socket.on('orderUpdated', function(updatedOrder) {
+                console.log('Order update received from server:', updatedOrder);
+                
+                // Update local storage
+                OrderManager.updateOrderStatus(updatedOrder.id, updatedOrder.status);
+                
+                // Show notification
+                    showNotification('Order Updated', `Order #${updatedOrder.id} status changed to ${getStatusDisplayName(updatedOrder.status)}`, 'info');
+                
+                // Reload orders to reflect changes
+                loadOrders();
+            });
+            
+            // Listen for init orders event
+            socket.on('initOrders', function(serverOrders) {
+                console.log('Received initial orders from server:', serverOrders.length);
+                
+                // Process incoming orders
+                if (Array.isArray(serverOrders) && serverOrders.length > 0) {
+                    let updatedCount = 0;
+                    
+                    serverOrders.forEach(serverOrder => {
+                        const localOrder = OrderManager.getOrderById(serverOrder.id);
+                        
+                        if (!localOrder) {
+                            // Add new order
+                            OrderManager.createOrder(serverOrder);
+                            updatedCount++;
+                        } else {
+                            // Compare timestamps to see if server version is newer
+                            const localUpdated = getLatestTimestamp(localOrder);
+                            const serverUpdated = getLatestTimestamp(serverOrder);
+                            
+                            if (serverUpdated > localUpdated) {
+                                // Update local order with server version
+                                OrderManager.updateOrderStatus(serverOrder.id, serverOrder.status);
+                                updatedCount++;
+                            }
+                        }
+                    });
+                    
+                    if (updatedCount > 0) {
+                            showNotification('Sync Complete', `Synchronized ${updatedCount} orders with server`, 'success');
+                        loadOrders();
+                    }
+                }
+            });
+            } catch (e) {
+                console.error("Error initializing socket connection:", e);
+            }
+            
+            // Function to get latest timestamp from an order
+            function getLatestTimestamp(order) {
+                if (order.statusHistory) {
+                    const timestamps = Object.values(order.statusHistory).map(date => new Date(date).getTime());
+                    return Math.max(...timestamps);
+                }
+                return new Date(order.createdAt).getTime();
+            }
+            
+            // Elements
+            const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+            const sidebar = document.querySelector('.dash-sidebar');
+            const mainContent = document.querySelector('.dash-main');
+            
+            const activeOrdersContainer = document.getElementById('active-orders-container');
+            const completedOrdersContainer = document.getElementById('completed-orders-container');
+            const allOrdersContainer = document.getElementById('all-orders-container');
+            
+            const navActiveCount = document.getElementById('nav-active-count');
+            const statsActiveCount = document.getElementById('stats-active-count');
+            const statsCompletedToday = document.getElementById('stats-completed-today');
+            const statsDeliveryCount = document.getElementById('stats-delivery-count');
+            const statsItemsCount = document.getElementById('stats-items-count');
+            
+            const activeCountBadge = document.getElementById('active-count');
+            const completedCountBadge = document.getElementById('completed-count');
+            const allCountBadge = document.getElementById('all-count');
+            
+            const orderTabs = document.querySelectorAll('.order-tab');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            const refreshButton = document.getElementById('refreshOrdersBtn');
+            const updateStatusModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            const modalOrderId = document.getElementById('modal-order-id');
+            const modalCurrentStatus = document.getElementById('modal-current-status');
+            const statusSelect = document.getElementById('status-select');
+            const saveStatusBtn = document.getElementById('save-status-btn');
+            
+            const navActiveOrders = document.getElementById('navActiveOrders');
+            const navCompletedOrders = document.getElementById('navCompletedOrders');
+            
+            // Sidebar toggle
+            sidebarCollapseBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('dash-sidebar-collapsed');
+                mainContent.classList.toggle('dash-main-expanded');
+                
+                // Change icon direction
+                const icon = this.querySelector('i');
+                if (sidebar.classList.contains('dash-sidebar-collapsed')) {
+                    icon.classList.remove('fa-chevron-left');
+                    icon.classList.add('fa-chevron-right');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-left');
+                }
+            });
+            
+            // Tab navigation
+            orderTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    console.log("Tab clicked:", this.id, "Target:", targetId);
+                    
+                    // Remove active class from all tabs
+                    orderTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab panes first
+                    tabPanes.forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    
+                    // Show the target pane
+                    const targetPane = document.getElementById(targetId);
+                    if (targetPane) {
+                        targetPane.classList.add('show', 'active');
+                        console.log("Activated pane:", targetId);
+                        
+                        // Refresh orders when tab is changed to ensure data is current
+                        loadOrders();
+                    } else {
+                        console.error("Target pane not found:", targetId);
+                    }
+                    
+                    // Force repaint to ensure proper display
+                    setTimeout(() => {
+                        const container = document.querySelector(`#${targetId} .orders-grid`);
+                        if (container) {
+                            container.style.opacity = '0.99';
+                            setTimeout(() => {
+                                container.style.opacity = '1';
+                            }, 50);
+                        }
+                    }, 10);
+                });
+            });
+            
+            // Sidebar nav links for tabs
+            navActiveOrders.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('active-orders-tab').click();
+            });
+            
+            navCompletedOrders.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('completed-orders-tab').click();
+            });
+            
+            // Order Status Display Names
+            function getStatusDisplayName(status) {
+            const statusDisplayNames = {
+                'pending': 'Pending',
+                'processing': 'Processing',
+                'cleaning': 'Cleaning',
+                'quality_check': 'Quality Check',
+                'ready': 'Ready for Delivery',
+                'out_for_delivery': 'Out for Delivery',
+                'delivered': 'Delivered',
+                'completed': 'Completed'
+            };
+                
+                return statusDisplayNames[status] || status;
+            }
+            
+            // Status Icons
+            function getStatusIcon(status) {
+                const statusIcons = {
+                    'pending': 'hourglass',
+                    'processing': 'cog fa-spin',
+                    'cleaning': 'soap',
+                    'quality_check': 'clipboard-check',
+                    'ready': 'box',
+                    'out_for_delivery': 'truck',
+                    'delivered': 'check-circle',
+                    'completed': 'check-double'
+                };
+                
+                return statusIcons[status] || 'circle';
+            }
+            
+            // Load orders on page load
+            loadOrders();
+            
+            // Refresh button click event
+            refreshButton.addEventListener('click', function() {
+                this.querySelector('i').classList.add('fa-spin');
+                loadOrders();
+                
+                // Stop spinning after 1 second
+                setTimeout(() => {
+                    this.querySelector('i').classList.remove('fa-spin');
+                }, 1000);
+            });
+            
+            // Save status button click event
+            saveStatusBtn.addEventListener('click', function() {
+                const orderId = modalOrderId.textContent;
+                const newStatus = statusSelect.value;
+                
+                if (orderId && newStatus) {
+                    // Show loading state
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    this.disabled = true;
+                    
+                    // Update order status
+                    const success = OrderManager.updateOrderStatus(orderId, newStatus);
+                    
+                    if (success) {
+                        updateStatusModal.hide();
+                        showNotification('Status Updated', `Order #${orderId} status changed to ${getStatusDisplayName(newStatus)}`, 'success');
+                        loadOrders(); // Reload orders to reflect the changes
+                    } else {
+                        showNotification('Error', 'Failed to update order status.', 'error');
+                    }
+                    
+                    // Reset button state
+                    setTimeout(() => {
+                        this.innerHTML = 'Save Changes';
+                        this.disabled = false;
+                    }, 500);
+                }
+            });
+            
+            // Function to load all orders
+            function loadOrders() {
+                console.log("Loading orders...");
+                
+                // Show loading state
+                showEmptyState(activeOrdersContainer, 'loading');
+                showEmptyState(completedOrdersContainer, 'loading');
+                showEmptyState(allOrdersContainer, 'loading');
+                
+                // Get all orders
+                const orders = OrderManager.getAllOrders();
+                console.log("Orders loaded:", orders);
+                
+                // Calculate stats
+                calculateStats(orders);
+                
+                // Filter active and completed orders
+                const activeOrders = orders.filter(order => order.status !== 'delivered' && order.status !== 'completed');
+                const completedOrders = orders.filter(order => order.status === 'delivered' || order.status === 'completed');
+                
+                // Update count badges
+                activeCountBadge.textContent = activeOrders.length;
+                completedCountBadge.textContent = completedOrders.length;
+                allCountBadge.textContent = orders.length;
+                navActiveCount.textContent = activeOrders.length;
+                
+                // Render orders
+                renderOrders(activeOrdersContainer, activeOrders);
+                renderOrders(completedOrdersContainer, completedOrders);
+                renderOrders(allOrdersContainer, orders);
+            }
+            
+            // Function to calculate dashboard stats
+            function calculateStats(orders) {
+                // Active orders count
+                const activeOrders = orders.filter(order => order.status !== 'delivered' && order.status !== 'completed');
+                statsActiveCount.textContent = activeOrders.length;
+                
+                // Completed today
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const completedToday = orders.filter(order => {
+                    if (order.status === 'delivered' || order.status === 'completed') {
+                        const statusDate = order.statusHistory && order.statusHistory[order.status] ? 
+                                          new Date(order.statusHistory[order.status]) : null;
+                        return statusDate && statusDate >= today;
+                    }
+                    return false;
+                });
+                
+                statsCompletedToday.textContent = completedToday.length;
+                
+                // Out for delivery count
+                const outForDelivery = orders.filter(order => order.status === 'out_for_delivery');
+                statsDeliveryCount.textContent = outForDelivery.length;
+                
+                // Total items processed (a mock calculation for demo)
+                let totalItems = 0;
+                orders.forEach(order => {
+                    if (order.services && Array.isArray(order.services)) {
+                        order.services.forEach(service => {
+                            totalItems += (service.quantity || 1);
+                        });
+                    }
+                });
+                
+                statsItemsCount.textContent = totalItems;
+            }
+            
+            // Function to show empty or loading state
+            function showEmptyState(container, state = 'empty') {
+                if (state === 'loading') {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                            <h3 class="empty-state-title">Loading orders...</h3>
+                            <p class="empty-state-description">Please wait while we fetch the latest order data.</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <h3 class="empty-state-title">No orders found</h3>
+                            <p class="empty-state-description">There are no orders in this category. New customer orders will appear here.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Function to render orders in a container
+            function renderOrders(container, orders) {
+                // Clear the container
+                container.innerHTML = '';
+                
+                // Check if there are orders to display
+                if (orders.length === 0) {
+                    showEmptyState(container);
+                    return;
+                }
+                
+                // Sort orders by creation date (newest first)
+                orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                // Render each order
+                orders.forEach(order => {
+                    // Calculate order total
+                    const total = typeof order.total === 'number' ? `$${order.total.toFixed(2)}` : 'N/A';
+                    
+                    // Format creation date
+                    const createdDate = order.createdAt ? OrderManager.formatDate(order.createdAt) : 'N/A';
+                    
+                    // Format expected delivery date
+                    const expectedDelivery = order.expectedDelivery ? OrderManager.formatDate(order.expectedDelivery) : 'N/A';
+                    
+                    // Format status
+                    const statusClass = `status-${order.status}`;
+                    const statusText = getStatusDisplayName(order.status);
+                    const statusIcon = getStatusIcon(order.status);
+                    
+                    // Get customer details
+                    const customerName = order.customer ? order.customer.name : 'Guest';
+                    const customerPhone = order.customer && order.customer.phone ? order.customer.phone : 'N/A';
+                    const customerAddress = order.customer && order.customer.address ? order.customer.address : 'N/A';
+                    
+                    // Create order card
+                    const orderCard = document.createElement('div');
+                    orderCard.innerHTML = `
+                        <div class="order-card">
+                            <div class="order-card-header">
+                                <div class="order-id">${order.id}</div>
+                                <div class="order-status ${statusClass}">
+                                    <i class="fas fa-${statusIcon}"></i> ${statusText}
+                                </div>
+                                </div>
+                            <div class="order-card-body">
+                                <div class="order-info-grid">
+                                    <div class="order-info-item">
+                                        <div class="order-info-label">Customer</div>
+                                        <div class="order-info-value">${customerName}</div>
+                                    </div>
+                                    <div class="order-info-item">
+                                        <div class="order-info-label">Order Date</div>
+                                        <div class="order-info-value">${createdDate}</div>
+                                    </div>
+                                    <div class="order-info-item">
+                                        <div class="order-info-label">Expected Delivery</div>
+                                        <div class="order-info-value">${expectedDelivery}</div>
+                                    </div>
+                                    <div class="order-info-item">
+                                        <div class="order-info-label">Total</div>
+                                        <div class="order-info-value">${total}</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 0.75rem;">
+                                    <div class="order-info-label">Services</div>
+                                    <div class="order-info-value">
+                                        ${getServicesList(order)}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="order-card-footer">
+                                <button class="order-action-btn view-details-btn" data-order-id="${order.id}">
+                                    <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                <button class="order-action-btn primary update-status-btn" data-order-id="${order.id}" data-status="${order.status}">
+                                    <i class="fas fa-sync-alt"></i> Update Status
+                                    </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add order card to container
+                    container.appendChild(orderCard);
+                });
+                
+                // Add event listeners to buttons
+                const updateStatusButtons = container.querySelectorAll('.update-status-btn');
+                updateStatusButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const orderId = this.getAttribute('data-order-id');
+                        const currentStatus = this.getAttribute('data-status');
+                        openUpdateStatusModal(orderId, currentStatus);
+                    });
+                });
+                
+                const viewDetailsButtons = container.querySelectorAll('.view-details-btn');
+                viewDetailsButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const orderId = this.getAttribute('data-order-id');
+                        window.location.href = `trackorder.html?orderId=${orderId}&advanced=true`;
+                    });
+                });
+            }
+            
+            // Function to create services list HTML
+            function getServicesList(order) {
+                if (!order.services || !Array.isArray(order.services) || order.services.length === 0) {
+                    return '<span class="text-muted">No services</span>';
+                }
+                
+                let servicesHtml = '';
+                
+                order.services.forEach(service => {
+                    const quantity = service.quantity || 1;
+                    servicesHtml += `<span class="badge" style="background-color: var(--primary-light); color: var(--primary-dark); margin-right: 0.5rem; margin-bottom: 0.5rem; display: inline-block; padding: 0.35rem 0.75rem; border-radius: 50px; font-weight: 500;">${service.name} (${quantity})</span>`;
+                    
+                    // If this is Wash & Fold and has items, show them
+                    if (service.name.toLowerCase().includes('wash') && service.items && Object.keys(service.items).length > 0) {
+                        let hasItems = false;
+                        
+                        // Check if any items have a quantity > 0
+                        for (const [itemName, itemQuantity] of Object.entries(service.items)) {
+                            if (itemQuantity > 0) {
+                                hasItems = true;
+                                break;
+                            }
+                        }
+                        
+                        if (hasItems) {
+                            servicesHtml += `<div style="margin-top: 0.5rem; margin-bottom: 0.5rem; padding-left: 1rem; font-size: 0.9rem;">`;
+                            servicesHtml += `<strong>Items:</strong><br>`;
+                            
+                            for (const [itemName, itemQuantity] of Object.entries(service.items)) {
+                                if (itemQuantity > 0) {
+                                    servicesHtml += `<span style="display: inline-block; margin-right: 0.75rem; margin-bottom: 0.25rem;">• ${itemName}: ${itemQuantity}</span>`;
+                                }
+                            }
+                            
+                            servicesHtml += `</div>`;
+                        }
+                    }
+                });
+                
+                return servicesHtml;
+            }
+            
+            // Function to open the update status modal
+            function openUpdateStatusModal(orderId, currentStatus) {
+                modalOrderId.textContent = orderId;
+                modalCurrentStatus.textContent = getStatusDisplayName(currentStatus);
+                modalCurrentStatus.className = `order-status ${currentStatus ? 'status-' + currentStatus : ''}`;
+                
+                // Set current status in select
+                statusSelect.value = currentStatus;
+                
+                // Show modal
+                updateStatusModal.show();
+            }
+            
+            // Function to show notification using SweetAlert2
+            function showNotification(title, message, type = 'success') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+                
+                Toast.fire({
+                    icon: type,
+                    title,
+                    text: message
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

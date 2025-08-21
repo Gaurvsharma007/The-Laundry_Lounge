@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshThreads Chatbot Help</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f8fa;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #3dbdbd;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #299f9f;
+      margin-top: 30px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    code {
+      background-color: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    ul {
+      padding-left: 25px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    .btn {
+      display: inline-block;
+      background-color: #3dbdbd;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #299f9f;
+    }
+    .note {
+      background-color: #fff8e1;
+      padding: 15px;
+      border-left: 4px solid #ffc107;
+      margin: 20px 0;
+    }
+    .success {
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-left: 4px solid #4caf50;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FreshThreads Chatbot Help</h1>
+    
+    <p>
+      The FreshThreads chatbot is now powered by Google's Gemini 2.0 Flash AI model through the Gemini API!
+      This provides intelligent, conversational responses to customer inquiries about our laundry services.
+    </p>
+    
+    <div class="success">
+      <strong>Update:</strong> The chatbot now uses the Gemini API for AI-powered responses. The system includes a robust fallback mechanism that will activate automatically if there are any issues with the API connection.
+    </div>
+    
+    <h2>How to Test the Chatbot</h2>
+    
+    <ol>
+      <li>
+        <strong>Start the Node.js server:</strong>
+        <ul>
+          <li>Open a command prompt or PowerShell window</li>
+          <li>Navigate to your project directory</li>
+          <li>Run: <code>npm run dev</code></li>
+        </ul>
+      </li>
+      <li>
+        <strong>Open the laundary.html file in your browser:</strong>
+        <ul>
+          <li>Go to <a href="http://localhost:3001/laundary.html">http://localhost:3001/laundary.html</a></li>
+          <li>Click on the chat button in the bottom right</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Start chatting!</strong> The AI-powered chatbot can help with:
+        <ul>
+          <li>Detailed information about services and pricing</li>
+          <li>Scheduling pickups with personalized recommendations</li>
+          <li>Order tracking assistance</li>
+          <li>Answering complex questions about laundry care</li>
+          <li>General inquiries about FreshThreads</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h2>Test Phrases</h2>
+    
+    <p>Try these example phrases to see the AI-powered chatbot in action:</p>
+    
+    <ul>
+      <li>"What's the best way to clean silk garments?"</li>
+      <li>"Can you explain your premium laundry service and how it differs from regular service?"</li>
+      <li>"I have a red wine stain on my white cotton shirt. What should I do?"</li>
+      <li>"What eco-friendly cleaning options do you offer?"</li>
+      <li>"My wedding dress needs cleaning. Do you offer special handling for delicate items?"</li>
+      <li>"Can I get an express service if I need my clothes back by tomorrow afternoon?"</li>
+      <li>"What loyalty programs or discounts do you offer for regular customers?"</li>
+    </ul>
+    
+    <h2>Technical Details</h2>
+    
+    <p>The chatbot uses the following technologies:</p>
+    
+    <ul>
+      <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+      <li><strong>Backend:</strong> Node.js with Express</li>
+      <li><strong>AI Integration:</strong> Google Gemini 2.0 Flash API</li>
+      <li><strong>Real-time Updates:</strong> Socket.io</li>
+    </ul>
+    
+    <div class="note">
+      <strong>Note:</strong> The system includes a fallback mechanism that will provide pre-defined responses if the Gemini API is unavailable for any reason, ensuring the chatbot is always functional.
+    </div>
+    
+    <h2>Troubleshooting</h2>
+    
+    <ul>
+      <li>
+        <strong>Chatbot not loading:</strong> Make sure your Node.js server is running and you're accessing the site through the correct port.
+      </li>
+      <li>
+        <strong>Slow responses:</strong> This could be due to high API traffic. The chatbot will show a typing indicator while waiting for responses.
+      </li>
+      <li>
+        <strong>Server not starting:</strong> Check console output for errors and make sure no other service is using port 3001.
+      </li>
+    </ul>
+    
+    <a href="laundary.html" class="btn">Go to FreshThreads Website</a>
+  </div>
+</body>
+</html> 

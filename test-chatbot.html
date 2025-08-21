@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Test</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="js/chatbot.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #3dbdbd;
+    }
+    .debug-box {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #3dbdbd;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    input {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .test-controls {
+      display: flex;
+      margin-top: 20px;
+    }
+    pre {
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chatbot Test Page</h1>
+    
+    <div class="test-controls">
+      <input type="text" id="manualMessage" placeholder="Type a test message...">
+      <button id="sendManualMessage">Send Message</button>
+    </div>
+    
+    <div class="debug-box">
+      <h3>Debug Information</h3>
+      <div>
+        <strong>API Status:</strong> <span id="apiStatus">Checking...</span>
+      </div>
+      <div>
+        <strong>Last Response:</strong>
+        <pre id="lastResponse">None yet</pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/gemini-api.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the chatbot
+      window.chatbot = new Chatbot();
+      
+      // Update API status
+      const apiStatus = document.getElementById('apiStatus');
+      if (window.chatbot.isUsingAI) {
+        apiStatus.textContent = 'Connected';
+        apiStatus.style.color = 'green';
+      } else {
+        apiStatus.textContent = 'Not Connected';
+        apiStatus.style.color = 'red';
+      }
+      
+      // Set up manual message button
+      document.getElementById('sendManualMessage').addEventListener('click', function() {
+        const messageInput = document.getElementById('manualMessage');
+        const message = messageInput.value.trim();
+        
+        if (message) {
+          // Open the chatbot if it's not already open
+          if (!window.chatbot.isOpen) {
+            window.chatbot.toggleChat(true);
+          }
+          
+          // Manually set the input value and trigger a send
+          const userInput = document.getElementById('userInput');
+          if (userInput) {
+            userInput.value = message;
+            window.chatbot.sendMessage();
+            
+            // Track the response for debug purposes
+            const responseCheckInterval = setInterval(() => {
+              const messages = window.chatbot.messages;
+              if (messages.length > 0 && messages[messages.length - 1].sender === 'bot') {
+                document.getElementById('lastResponse').textContent = messages[messages.length - 1].text;
+                clearInterval(responseCheckInterval);
+              }
+            }, 500);
+          }
+          
+          // Clear the test input
+          messageInput.value = '';
+        }
+      });
+      
+      // Also trigger on Enter key
+      document.getElementById('manualMessage').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          document.getElementById('sendManualMessage').click();
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

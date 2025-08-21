@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Box</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: rgb(61,189,189);
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            background-color: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e40af;
+        }
+
+        .alert-description {
+            color: #64748b;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        #complaintForm {
+            display: block;
+        }
+
+        #confirmationView {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Submit a Complaint</h2>
+            <p class="card-description">Tell us about your issue and we'll get back to you as soon as possible.</p>
+        </div>
+
+        <div id="complaintForm">
+            <div class="card-content">
+                <textarea id="complaintText" placeholder="Please describe your complaint in detail..." required></textarea>
+            </div>
+            <div class="card-footer">
+                <button id="submitBtn" disabled>Submit Complaint</button>
+            </div>
+        </div>
+
+        <div id="confirmationView">
+            <div class="card-content">
+                <div class="alert">
+                    <div class="alert-title">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Submission Date
+                    </div>
+                    <div id="submissionDate" class="alert-description"></div>
+                </div>
+
+                <div class="alert">
+                    <div class="alert-title">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Estimated Response Time
+                    </div>
+                    <div id="waitingTime" class="alert-description"></div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button id="resetBtn">Submit Another Complaint</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const complaintText = document.getElementById('complaintText');
+        const submitBtn = document.getElementById('submitBtn');
+        const complaintForm = document.getElementById('complaintForm');
+        const confirmationView = document.getElementById('confirmationView');
+        const submissionDateEl = document.getElementById('submissionDate');
+        const waitingTimeEl = document.getElementById('waitingTime');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Enable/disable submit button based on textarea content
+        complaintText.addEventListener('input', function() {
+            submitBtn.disabled = !complaintText.value.trim();
+        });
+
+        // Handle form submission
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!complaintText.value.trim()) return;
+
+            // Get current date
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Generate random waiting time between 3-7 days
+            const days = Math.floor(Math.random() * 5) + 3;
+            
+            // Update confirmation view
+            submissionDateEl.textContent = formattedDate;
+            waitingTimeEl.textContent = `Your complaint has been received. Our team will review it within ${days} business days.`;
+            
+            // Show confirmation view, hide form
+            complaintForm.style.display = 'none';
+            confirmationView.style.display = 'block';
+        });
+
+        // Handle reset button
+        resetBtn.addEventListener('click', function() {
+            // Clear form and show it again
+            complaintText.value = '';
+            submitBtn.disabled = true;
+            complaintForm.style.display = 'block';
+            confirmationView.style.display = 'none';
+        });
+    </script>
+</body>
+</html> 

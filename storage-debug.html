@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalStorage Debug Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #3dbdbd;
+            margin-bottom: 20px;
+        }
+        .debug-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+            max-height: 300px;
+        }
+        .actions {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #3dbdbd;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button.danger {
+            background-color: #e74c3c;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .warning {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>LocalStorage Debug Tool</h1>
+    
+    <div class="debug-section">
+        <h2>Authentication Users</h2>
+        <pre id="usersData">Loading...</pre>
+        <div class="actions">
+            <button id="refreshUsers">Refresh</button>
+            <button id="clearUsers" class="danger">Clear Users</button>
+        </div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Current Session</h2>
+        <pre id="sessionData">Loading...</pre>
+        <div class="actions">
+            <button id="refreshSession">Refresh</button>
+            <button id="clearSession" class="danger">Clear Session</button>
+        </div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>All LocalStorage Keys</h2>
+        <pre id="allKeys">Loading...</pre>
+        <div class="actions">
+            <button id="refreshAll">Refresh</button>
+            <button id="clearAll" class="danger">Clear All LocalStorage</button>
+        </div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Create Test User</h2>
+        <p>Create a new test user with the following credentials:</p>
+        <ul>
+            <li><strong>Email:</strong> test@example.com</li>
+            <li><strong>Password:</strong> test123</li>
+        </ul>
+        <div class="actions">
+            <button id="createTestUser">Create Test User</button>
+        </div>
+        <p class="warning">Note: This will overwrite existing users!</p>
+    </div>
+    
+    <script>
+        // Same hashing function as used in SimpleAuth.js
+        function hashPassword(password) {
+            let hash = 0;
+            for (let i = 0; i < password.length; i++) {
+                const char = password.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash.toString(16);
+        }
+        
+        // Function to format JSON
+        function formatJSON(json) {
+            try {
+                return JSON.stringify(JSON.parse(json), null, 2);
+            } catch (e) {
+                return "Invalid JSON: " + json;
+            }
+        }
+        
+        // Function to update users display
+        function updateUsersDisplay() {
+            const usersData = localStorage.getItem('laundryUsers');
+            const usersDisplay = document.getElementById('usersData');
+            
+            if (!usersData) {
+                usersDisplay.textContent = "No users found";
+            } else {
+                usersDisplay.textContent = formatJSON(usersData);
+            }
+        }
+        
+        // Function to update session display
+        function updateSessionDisplay() {
+            const sessionData = localStorage.getItem('userSession');
+            const sessionDisplay = document.getElementById('sessionData');
+            
+            if (!sessionData) {
+                sessionDisplay.textContent = "No active session";
+            } else {
+                sessionDisplay.textContent = formatJSON(sessionData);
+            }
+        }
+        
+        // Function to update all keys display
+        function updateAllKeysDisplay() {
+            const allKeys = document.getElementById('allKeys');
+            let keysHtml = "";
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                try {
+                    // Try to parse as JSON to display it nicely
+                    const value = JSON.parse(localStorage.getItem(key));
+                    keysHtml += `"${key}": ${JSON.stringify(value, null, 2)}\n\n`;
+                } catch (e) {
+                    // If not JSON, just show as string
+                    keysHtml += `"${key}": "${localStorage.getItem(key)}"\n\n`;
+                }
+            }
+            
+            allKeys.textContent = keysHtml || "No items in localStorage";
+        }
+        
+        // Function to create test user
+        function createTestUser() {
+            // Create test user
+            const testUser = {
+                id: '2',
+                firstName: 'Test',
+                lastName: 'User',
+                email: 'test@example.com',
+                phone: '9876543210',
+                password: hashPassword('test123'),
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('laundryUsers', JSON.stringify([testUser]));
+            
+            // Update display
+            updateUsersDisplay();
+            
+            alert('Test user created successfully!');
+        }
+        
+        // Initialize displays
+        updateUsersDisplay();
+        updateSessionDisplay();
+        updateAllKeysDisplay();
+        
+        // Event listeners
+        document.getElementById('refreshUsers').addEventListener('click', updateUsersDisplay);
+        document.getElementById('clearUsers').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all users?')) {
+                localStorage.removeItem('laundryUsers');
+                updateUsersDisplay();
+            }
+        });
+        
+        document.getElementById('refreshSession').addEventListener('click', updateSessionDisplay);
+        document.getElementById('clearSession').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the current session?')) {
+                localStorage.removeItem('userSession');
+                updateSessionDisplay();
+            }
+        });
+        
+        document.getElementById('refreshAll').addEventListener('click', updateAllKeysDisplay);
+        document.getElementById('clearAll').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear ALL localStorage data?')) {
+                localStorage.clear();
+                updateUsersDisplay();
+                updateSessionDisplay();
+                updateAllKeysDisplay();
+            }
+        });
+        
+        document.getElementById('createTestUser').addEventListener('click', () => {
+            if (confirm('This will overwrite any existing users. Continue?')) {
+                createTestUser();
+            }
+        });
+    </script>
+</body>
+</html> 

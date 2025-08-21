@@ -1,0 +1,21 @@
+[
+  {
+    "id": "1",
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "test@example.com",
+    "phone": "1234567890",
+    "password": "password",
+    "createdAt": "2025-04-25T12:48:07.396Z"
+  },
+  {
+    "id": "1746210385124",
+    "firstName": "Lakshay",
+    "lastName": "Sarpal",
+    "email": "laundarymail@chefalicious.com",
+    "phone": "1234567890",
+    "password": "aff5af97a9c2d25f610bf1ebbac5fe6f9b1ae35b90202ff52cad30ca593536c7f22854a70859ee03090f1b70eb01a2b8a4557917a451320ade8bb94410d0c627",
+    "salt": "b4a8da19e2cd9861c78a5902ac234dc8",
+    "createdAt": "2025-05-02T18:26:25.124Z"
+  }
+]

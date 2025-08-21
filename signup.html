@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshThreads - Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="simple-auth.js"></script>
+    <style>
+        :root {
+            --primary-color: #3dbdbd;
+            --primary-dark: #299f9f;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-dark: #333;
+            --text-light: #fff;
+            --text-muted: #6c757d;
+            --transition-speed: 0.3s;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #f9f7ff, #fff1f9, #fff7f0);
+            min-height: 100vh;
+            line-height: 1.6;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .signup-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .signup-container {
+                flex-direction: row;
+                height: 600px;
+            }
+        }
+
+        .info-side {
+            background: linear-gradient(135deg, #a855f7, #ec4899, #f97316);
+            color: white;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .info-side {
+                width: 40%;
+            }
+        }
+
+        .info-side h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .info-side p {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .benefits {
+            list-style: none;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-item i {
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .form-side {
+            padding: 3rem 2rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .form-side h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-with-icon input,
+        .input-with-icon select {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .input-with-icon input:focus,
+        .input-with-icon select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(61, 189, 189, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .login-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(61, 189, 189, 0.3);
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message, .success-message {
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #f5c6cb;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="info-side">
+            <h1>Join FreshThreads</h1>
+            <p>Create your account and experience our premium laundry services with convenience and quality.</p>
+            
+            <ul class="benefits">
+                <li class="benefit-item">
+                    <i class="fas fa-check"></i>
+                    <span>Track your orders in real-time</span>
+                </li>
+                <li class="benefit-item">
+                    <i class="fas fa-check"></i>
+                    <span>Schedule pickups with ease</span>
+                </li>
+                <li class="benefit-item">
+                    <i class="fas fa-check"></i>
+                    <span>Access your service history</span>
+                </li>
+                <li class="benefit-item">
+                    <i class="fas fa-check"></i>
+                    <span>Receive exclusive offers</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="form-side">
+            <h2>Create Your Account</h2>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+            
+            <form id="signupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="firstName" name="firstName" placeholder="Your first name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="lastName" name="lastName" placeholder="Your last name" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="Your email address" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" name="phone" placeholder="Your phone number" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Create a password" required minlength="6">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required minlength="6">
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <p class="login-link">Already have an account? <a href="freshthreads-login.html">Sign in</a></p>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        Create Account
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const spinner = document.getElementById('spinner');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Check if already logged in
+            if (typeof SimpleAuth !== 'undefined' && SimpleAuth.isLoggedIn()) {
+                window.location.href = 'laundary.html';
+                return;
+            }
+            
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Hide previous messages
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+                
+                // Get form data
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Validate form data
+                if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
+                    showError('Please fill in all fields');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters long');
+                    return;
+                }
+                
+                // Show loading spinner
+                submitBtn.disabled = true;
+                spinner.style.display = 'inline-block';
+                
+                // Try to register user
+                if (typeof SimpleAuth !== 'undefined') {
+                    try {
+                        const result = SimpleAuth.register({
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            phone: phone,
+                            password: password
+                        });
+                        
+                        console.log('Registration result:', result);
+                        
+                        // Hide spinner
+                        submitBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        
+                        if (result.success) {
+                            showSuccess('Account created successfully! Redirecting to login...');
+                            
+                            // Clear form
+                            signupForm.reset();
+                            
+                            // Redirect to login page after 2 seconds
+                            setTimeout(function() {
+                                window.location.href = 'freshthreads-login.html';
+                            }, 2000);
+                        } else {
+                            showError(result.message || 'Registration failed');
+                        }
+                    } catch (error) {
+                        // Hide spinner
+                        submitBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        
+                        console.error('Registration error:', error);
+                        showError('An error occurred: ' + error.message);
+                    }
+                } else {
+                    // Try server API registration if SimpleAuth is not available
+                    fetch('/api/auth/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            phone: phone,
+                            password: password
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Hide spinner
+                        submitBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        
+                        if (data.success) {
+                            showSuccess('Account created successfully! Redirecting to login...');
+                            
+                            // Clear form
+                            signupForm.reset();
+                            
+                            // Redirect to login page after 2 seconds
+                            setTimeout(function() {
+                                window.location.href = 'freshthreads-login.html';
+                            }, 2000);
+                        } else {
+                            showError(data.message || 'Registration failed');
+                        }
+                    })
+                    .catch(error => {
+                        // Hide spinner
+                        submitBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        
+                        console.error('Registration error:', error);
+                        showError('An error occurred: ' + error.message);
+                    });
+                }
+            });
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                errorMessage.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                successMessage.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html> 

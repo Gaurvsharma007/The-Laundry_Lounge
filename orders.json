@@ -1,0 +1,1492 @@
+[
+  {
+    "id": "ORD1234567",
+    "createdAt": "2025-04-19T12:28:23.745Z",
+    "status": "processing",
+    "statusHistory": {
+      "pending": "2025-04-19T12:28:23.745Z",
+      "processing": "2025-04-25T11:36:48.303Z",
+      "delivered": "2025-04-22T13:04:29.749Z"
+    },
+    "expectedDelivery": "2025-04-24T12:28:23.745Z",
+    "totalAmount": 45.5,
+    "customer": {
+      "name": "John Doe",
+      "phone": "555-123-4567",
+      "address": "123 Main St, Anytown, CA 12345"
+    },
+    "pickup": {
+      "date": "2025-04-19T12:28:23.745Z",
+      "timeSlot": "10:00 AM - 12:00 PM",
+      "specialInstructions": "Please call when you arrive."
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "quantity": 3,
+        "price": 10
+      },
+      {
+        "name": "Dry Cleaning",
+        "quantity": 2,
+        "price": 7.75
+      }
+    ]
+  },
+  {
+    "id": "ORD7654321",
+    "createdAt": "2025-04-21T12:28:23.745Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T11:36:48.164Z",
+      "delivered": "2025-04-22T12:45:03.683Z"
+    },
+    "expectedDelivery": "2025-04-25T12:28:23.745Z",
+    "totalAmount": 28.75,
+    "customer": {
+      "name": "Jane Smith",
+      "phone": "555-987-6543",
+      "address": "456 Oak Ave, Somewhere, NY 54321"
+    },
+    "pickup": {
+      "date": "2025-04-21T12:28:23.745Z",
+      "timeSlot": "2:00 PM - 4:00 PM"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "quantity": 2,
+        "price": 10
+      },
+      {
+        "name": "Ironing",
+        "quantity": 3,
+        "price": 2.25
+      }
+    ]
+  },
+  {
+    "id": "ORD9876543",
+    "createdAt": "2025-04-17T12:28:23.745Z",
+    "status": "completed",
+    "statusHistory": {
+      "pending": "2025-04-17T12:28:23.745Z",
+      "processing": "2025-04-18T12:28:23.745Z",
+      "ready": "2025-04-20T12:28:23.746Z",
+      "completed": "2025-04-25T11:36:48.251Z"
+    },
+    "expectedDelivery": "2025-04-21T12:28:23.745Z",
+    "totalAmount": 67.25,
+    "customer": {
+      "name": "Robert Johnson",
+      "phone": "555-555-5555",
+      "address": "789 Pine Blvd, Elsewhere, TX 98765"
+    },
+    "pickup": {
+      "date": "2025-04-17T12:28:23.746Z",
+      "timeSlot": "9:00 AM - 11:00 AM"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "quantity": 4,
+        "price": 10
+      },
+      {
+        "name": "Dry Cleaning",
+        "quantity": 3,
+        "price": 7.75
+      },
+      {
+        "name": "Ironing",
+        "quantity": 2,
+        "price": 2.25
+      }
+    ]
+  },
+  {
+    "id": "LD-719675479",
+    "createdAt": "2025-04-22T20:46:27.196Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T20:46:27.196Z",
+      "delivered": "2025-04-22T22:53:56.000Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "345ty"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-29T00:00:00.000Z",
+      "timeSlot": "\n                        10:00 AM - 12:00 PM\n                        3 slots left\n                    ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.99,
+    "tax": 0.4792,
+    "total": 6.4692,
+    "expectedDelivery": "2025-04-25T20:46:27.196Z"
+  },
+  {
+    "id": "LD-092898489",
+    "createdAt": "2025-04-22T22:23:40.928Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T22:23:40.928Z",
+      "quality_check": "2025-04-22T22:24:36.428Z",
+      "delivered": "2025-04-22T22:52:01.415Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "dfghjnm"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "\n                                12:00 - 2:00 PM\n                                Available\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.97,
+    "tax": 0.47759999999999997,
+    "total": 6.4475999999999996,
+    "expectedDelivery": "2025-04-24T22:23:40.928Z"
+  },
+  {
+    "id": "LD-990679569",
+    "createdAt": "2025-04-22T12:31:19.906Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T12:31:19.906Z",
+      "processing": "2025-04-22T12:31:47.480Z",
+      "quality_check": "2025-04-22T12:31:56.898Z",
+      "delivered": "2025-04-22T12:32:46.682Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 1.99,
+    "tax": 0.1592,
+    "total": 2.1492,
+    "expectedDelivery": "2025-04-24T12:31:19.906Z"
+  },
+  {
+    "id": "LD-331976413",
+    "createdAt": "2025-04-22T12:39:33.319Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T12:39:33.319Z",
+      "delivered": "2025-04-22T13:04:29.703Z"
+    },
+    "customer": {
+      "name": "as",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 2
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 3.98,
+    "tax": 0.3184,
+    "total": 4.2984,
+    "expectedDelivery": "2025-04-24T12:39:33.319Z"
+  },
+  {
+    "id": "LD-999837331",
+    "createdAt": "2025-04-22T12:46:09.998Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T12:46:09.998Z",
+      "cleaning": "2025-04-22T13:02:32.690Z",
+      "delivered": "2025-04-22T13:04:29.734Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "ad"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 2
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 3.98,
+    "tax": 0.3184,
+    "total": 4.2984,
+    "expectedDelivery": "2025-04-24T12:46:09.998Z"
+  },
+  {
+    "id": "LD-296792419",
+    "createdAt": "2025-04-22T12:54:42.968Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T12:54:42.968Z",
+      "delivered": "2025-04-22T13:04:29.741Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.97,
+    "tax": 0.47759999999999997,
+    "total": 6.4475999999999996,
+    "expectedDelivery": "2025-04-24T12:54:42.968Z"
+  },
+  {
+    "id": "LD-295342253",
+    "createdAt": "2025-04-22T13:03:12.953Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-22T13:03:12.953Z"
+    },
+    "customer": {
+      "name": "as",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-22T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 11.96,
+    "tax": 0.9568000000000001,
+    "total": 12.9168,
+    "expectedDelivery": "2025-04-25T13:03:12.953Z"
+  },
+  {
+    "id": "LD-678099910",
+    "createdAt": "2025-04-22T13:04:56.780Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-22T13:04:56.780Z"
+    },
+    "customer": {
+      "name": "ads",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "a"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 2
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 9.97,
+    "tax": 0.7976000000000001,
+    "total": 10.767600000000002,
+    "expectedDelivery": "2025-04-25T13:04:56.780Z"
+  },
+  {
+    "id": "LD-389353534",
+    "createdAt": "2025-04-22T13:09:33.893Z",
+    "status": "ready",
+    "statusHistory": {
+      "pending": "2025-04-22T13:09:33.893Z",
+      "ready": "2025-04-22T22:57:38.622Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "pl"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 2
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-22T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 3.98,
+    "tax": 0.3184,
+    "total": 4.2984,
+    "expectedDelivery": "2025-04-24T13:09:33.893Z"
+  },
+  {
+    "id": "LD-299134824",
+    "createdAt": "2025-04-22T13:13:52.991Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T13:13:52.991Z",
+      "processing": "2025-04-22T13:26:50.129Z",
+      "cleaning": "2025-04-22T13:26:59.192Z",
+      "delivered": "2025-04-22T16:54:54.302Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 1.99,
+    "tax": 0.1592,
+    "total": 2.1492,
+    "expectedDelivery": "2025-04-24T13:13:52.991Z"
+  },
+  {
+    "id": "LD-267771488",
+    "createdAt": "2025-04-22T13:26:22.677Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T13:26:22.677Z",
+      "processing": "2025-04-22T13:26:46.349Z",
+      "cleaning": "2025-04-22T13:27:11.451Z",
+      "delivered": "2025-04-22T16:54:49.846Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 8
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Express Care",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 35.115,
+    "tax": 2.8092,
+    "total": 37.9242,
+    "expectedDelivery": "2025-04-25T13:26:22.677Z"
+  },
+  {
+    "id": "LD-086119079",
+    "createdAt": "2025-04-22T13:28:00.861Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T13:28:00.861Z",
+      "cleaning": "2025-04-22T13:28:25.173Z",
+      "out_for_delivery": "2025-04-22T13:28:28.754Z",
+      "delivered": "2025-04-22T13:28:40.676Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "hjfj"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Express Care",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 20.19,
+    "tax": 1.6152000000000002,
+    "total": 21.805200000000003,
+    "expectedDelivery": "2025-04-25T13:28:00.861Z"
+  },
+  {
+    "id": "LD-430995884",
+    "createdAt": "2025-04-22T13:47:44.309Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T13:47:44.309Z",
+      "cleaning": "2025-04-22T13:48:25.551Z",
+      "out_for_delivery": "2025-04-22T13:48:34.088Z",
+      "delivered": "2025-04-22T13:48:50.584Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "as"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 2
+      },
+      {
+        "name": "Express Care",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 8.22,
+    "tax": 0.6576000000000001,
+    "total": 8.877600000000001,
+    "expectedDelivery": "2025-04-24T13:47:44.309Z"
+  },
+  {
+    "id": "LD-643248424",
+    "createdAt": "2025-04-22T13:59:56.432Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T13:59:56.432Z",
+      "cleaning": "2025-04-22T14:00:05.775Z",
+      "delivered": "2025-04-22T14:00:17.998Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "asdfds"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.97,
+    "tax": 0.47759999999999997,
+    "total": 6.4475999999999996,
+    "expectedDelivery": "2025-04-24T13:59:56.432Z"
+  },
+  {
+    "id": "LD-987389164",
+    "createdAt": "2025-04-22T14:41:09.873Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T14:41:09.873Z",
+      "delivered": "2025-04-22T14:47:59.290Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "wasd"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      },
+      {
+        "name": "Express Care",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-22T00:00:00.000Z",
+      "timeSlot": "10:00 AM - 12:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 11.205,
+    "tax": 0.8964,
+    "total": 12.1014,
+    "expectedDelivery": "2025-04-24T14:41:09.873Z"
+  },
+  {
+    "id": "LD-749629744",
+    "createdAt": "2025-04-22T14:49:37.496Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T14:49:37.496Z",
+      "cleaning": "2025-04-22T14:49:54.041Z",
+      "out_for_delivery": "2025-04-22T14:50:06.009Z",
+      "delivered": "2025-04-22T16:54:47.330Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "asdfgvbn"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 6
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Express Care",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 29.145,
+    "tax": 2.3316,
+    "total": 31.476599999999998,
+    "expectedDelivery": "2025-04-25T14:49:37.496Z"
+  },
+  {
+    "id": "LD-463989286",
+    "createdAt": "2025-04-22T14:50:54.639Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T14:50:54.639Z",
+      "processing": "2025-04-22T14:51:09.992Z",
+      "cleaning": "2025-04-22T14:51:17.482Z",
+      "delivered": "2025-04-22T14:53:36.700Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "asdfghj"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 7
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-30T00:00:00.000Z",
+      "timeSlot": "4:00 PM - 6:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 19.92,
+    "tax": 1.5936000000000001,
+    "total": 21.5136,
+    "expectedDelivery": "2025-04-25T14:50:54.639Z"
+  },
+  {
+    "id": "LD-248197563",
+    "createdAt": "2025-04-22T15:00:32.481Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T15:00:32.481Z",
+      "cleaning": "2025-04-22T15:01:44.078Z",
+      "delivered": "2025-04-22T15:01:53.126Z"
+    },
+    "customer": {
+      "name": "ad",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "hgfd 87t jhjv"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 5
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 15.94,
+    "tax": 1.2752,
+    "total": 17.2152,
+    "expectedDelivery": "2025-04-25T15:00:32.481Z"
+  },
+  {
+    "id": "LD-097512450",
+    "createdAt": "2025-04-22T15:12:50.975Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T15:12:50.975Z",
+      "delivered": "2025-04-22T16:54:40.899Z"
+    },
+    "customer": {
+      "name": "waes",
+      "email": "awedsfgd",
+      "phone": "Not provided",
+      "address": "aewr"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-22T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 1.99,
+    "tax": 0.1592,
+    "total": 2.1492,
+    "expectedDelivery": "2025-04-24T15:12:50.975Z"
+  },
+  {
+    "id": "LD-293062666",
+    "createdAt": "2025-04-22T15:18:02.930Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T15:18:02.930Z",
+      "cleaning": "2025-04-22T15:18:28.013Z",
+      "delivered": "2025-04-22T15:18:31.207Z"
+    },
+    "customer": {
+      "name": "adf",
+      "email": "123@gmail.com",
+      "phone": "Not provided",
+      "address": "asd"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 2
+      },
+      {
+        "name": "Express Care",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "2:00 PM - 4:00 PM",
+      "specialInstructions": ""
+    },
+    "subtotal": 8.22,
+    "tax": 0.6576000000000001,
+    "total": 8.877600000000001,
+    "expectedDelivery": "2025-04-24T15:18:02.930Z"
+  },
+  {
+    "id": "LD-217773820",
+    "createdAt": "2025-04-22T22:36:22.177Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T22:36:22.177Z",
+      "quality_check": "2025-04-22T22:44:51.942Z",
+      "out_for_delivery": "2025-04-22T22:49:04.365Z",
+      "delivered": "2025-04-22T22:49:28.708Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "asdfrgt"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "\n                                10:00 - 12:00 PM\n                                High demand\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.97,
+    "tax": 0.47759999999999997,
+    "total": 6.4475999999999996,
+    "expectedDelivery": "2025-04-24T22:36:22.177Z"
+  },
+  {
+    "id": "LD-330077504",
+    "createdAt": "2025-04-22T22:59:03.300Z",
+    "status": "delivered",
+    "statusHistory": {
+      "pending": "2025-04-22T22:59:03.300Z",
+      "quality_check": "2025-04-22T22:59:16.958Z",
+      "out_for_delivery": "2025-04-22T22:59:34.998Z",
+      "delivered": "2025-04-22T22:59:54.950Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "nbhgvf"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 6
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 11.94,
+    "tax": 0.9551999999999999,
+    "total": 12.895199999999999,
+    "expectedDelivery": "2025-04-24T22:59:03.300Z"
+  },
+  {
+    "id": "LD-420812787",
+    "createdAt": "2025-04-24T04:30:54.208Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-24T04:30:54.208Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "khgf"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 5
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Wash & Iron",
+        "price": 3.5,
+        "quantity": 1
+      },
+      {
+        "name": "Bedding & Linens",
+        "price": 12.99,
+        "quantity": 1
+      },
+      {
+        "name": "Express Service",
+        "price": 1.5,
+        "quantity": 1
+      },
+      {
+        "name": "Stain Treatment",
+        "price": 7.99,
+        "quantity": 15
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                10:00 - 12:00 PM\n                                High demand\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 230.67000000000002,
+    "tax": 18.4536,
+    "total": 249.1236,
+    "expectedDelivery": "2025-04-27T04:30:54.208Z"
+  },
+  {
+    "id": "LD-436646561",
+    "createdAt": "2025-04-24T04:39:54.366Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-24T04:39:54.366Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "ghbn"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.99,
+    "tax": 0.4792,
+    "total": 6.4692,
+    "expectedDelivery": "2025-04-27T04:39:54.366Z"
+  },
+  {
+    "id": "LD-191519484",
+    "createdAt": "2025-04-24T04:52:51.915Z",
+    "status": "quality_check",
+    "statusHistory": {
+      "pending": "2025-04-24T04:52:51.915Z",
+      "quality_check": "2025-04-24T04:58:58.431Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "ewrfgt"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 4
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-23T00:00:00.000Z",
+      "timeSlot": "\n                                12:00 - 2:00 PM\n                                Available\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 7.96,
+    "tax": 0.6368,
+    "total": 8.5968,
+    "expectedDelivery": "2025-04-26T04:52:51.915Z"
+  },
+  {
+    "id": "LD-611146294",
+    "createdAt": "2025-04-25T12:06:46.111Z",
+    "status": "quality_check",
+    "statusHistory": {
+      "pending": "2025-04-25T12:06:46.111Z",
+      "quality_check": "2025-04-25T12:07:24.285Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "lakshaysarpal7@gmail.com",
+      "phone": "Not provided",
+      "address": "edrfgh"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 4
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-25T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 7.96,
+    "tax": 0.6368,
+    "total": 8.5968,
+    "expectedDelivery": "2025-04-27T12:06:46.111Z"
+  },
+  {
+    "id": "LD-684455204",
+    "createdAt": "2025-04-25T13:08:16.844Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T13:08:16.844Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "lakshaysarpal7@gmail.com",
+      "phone": "Not provided",
+      "address": "asdf"
+    },
+    "services": [
+      {
+        "name": "Stain Treatment",
+        "price": 7.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 7.99,
+    "tax": 0.6392,
+    "total": 8.6292,
+    "expectedDelivery": "2025-04-27T13:08:16.844Z"
+  },
+  {
+    "id": "LD-088222604",
+    "createdAt": "2025-04-25T13:29:20.882Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T13:29:20.882Z"
+    },
+    "customer": {
+      "name": "sdfgf",
+      "email": "wesrdfg",
+      "phone": "Not provided",
+      "address": "ewrfgf"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 3
+      },
+      {
+        "name": "Express Service",
+        "price": 1.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 11.205,
+    "tax": 0.8964,
+    "total": 12.1014,
+    "expectedDelivery": "2025-04-27T13:29:20.882Z"
+  },
+  {
+    "id": "LD-752249674",
+    "createdAt": "2025-04-25T13:40:07.522Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T13:40:07.522Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "thelaundarylounge@gmail.com",
+      "phone": "Not provided",
+      "address": "j"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.99,
+    "tax": 0.4792,
+    "total": 6.4692,
+    "expectedDelivery": "2025-04-28T13:40:07.522Z"
+  },
+  {
+    "id": "LD-666260785",
+    "createdAt": "2025-04-25T13:42:46.662Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T13:42:46.662Z"
+    },
+    "customer": {
+      "name": "wert",
+      "email": "lakshaysarpal7@gmail.com",
+      "phone": "Not provided",
+      "address": "qweg"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.99,
+    "tax": 0.4792,
+    "total": 6.4692,
+    "expectedDelivery": "2025-04-28T13:42:46.662Z"
+  },
+  {
+    "id": "LD-300325742",
+    "createdAt": "2025-04-25T13:45:33.003Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T13:45:33.003Z"
+    },
+    "customer": {
+      "name": "asad",
+      "email": "esfdg",
+      "phone": "Not provided",
+      "address": "wesrg"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 1
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Wash & Iron",
+        "price": 3.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 11.48,
+    "tax": 0.9184000000000001,
+    "total": 12.3984,
+    "expectedDelivery": "2025-04-28T13:45:33.003Z"
+  },
+  {
+    "id": "LD-309746929",
+    "createdAt": "2025-04-25T13:47:43.097Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T13:47:43.097Z"
+    },
+    "customer": {
+      "name": "sdfgf",
+      "email": "wesrdfg",
+      "phone": "Not provided",
+      "address": "awsd"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Wash & Iron",
+        "price": 3.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-24T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 9.49,
+    "tax": 0.7592,
+    "total": 10.2492,
+    "expectedDelivery": "2025-04-28T13:47:43.097Z"
+  },
+  {
+    "id": "LD-436062784",
+    "createdAt": "2025-04-25T17:59:54.360Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-04-25T17:59:54.360Z"
+    },
+    "customer": {
+      "name": "sdfgf",
+      "email": "wesrdfg",
+      "phone": "Not provided",
+      "address": "cv"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-04-25T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 5.99,
+    "tax": 0.4792,
+    "total": 6.4692,
+    "expectedDelivery": "2025-04-28T17:59:54.360Z"
+  },
+  {
+    "id": "LD-850439455",
+    "createdAt": "2025-05-02T18:33:58.504Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-05-02T18:33:58.504Z"
+    },
+    "customer": {
+      "name": "asd",
+      "email": "laundarymail@chefalicious.com",
+      "phone": "Not provided",
+      "address": "sg"
+    },
+    "services": [
+      {
+        "name": "Stain Treatment",
+        "price": 7.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-05-08T00:00:00.000Z",
+      "timeSlot": "\n                                10:00 - 12:00 PM\n                                High demand\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 7.99,
+    "tax": 0.6392,
+    "total": 8.6292,
+    "expectedDelivery": "2025-05-04T18:33:58.504Z"
+  },
+  {
+    "id": "LD-476794114",
+    "createdAt": "2025-05-04T10:49:54.767Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-05-04T10:49:54.767Z"
+    },
+    "customer": {
+      "name": "asd",
+      "email": "laundarymail@chefalicious.com",
+      "phone": "Not provided",
+      "address": "sdfghj"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-05-22T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 1.99,
+    "tax": 0.1592,
+    "total": 2.1492,
+    "expectedDelivery": "2025-05-06T10:49:54.767Z"
+  },
+  {
+    "id": "LD-610416121",
+    "createdAt": "2025-05-04T11:25:26.104Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-05-04T11:25:26.104Z"
+    },
+    "customer": {
+      "name": "asd",
+      "email": "laundarymail@chefalicious.com",
+      "phone": "Not provided",
+      "address": "wertyu"
+    },
+    "services": [
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      },
+      {
+        "name": "Wash & Iron",
+        "price": 3.5,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-05-14T00:00:00.000Z",
+      "timeSlot": "\n                                12:00 - 2:00 PM\n                                Available\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 9.49,
+    "tax": 0.7592,
+    "total": 10.2492,
+    "expectedDelivery": "2025-05-07T11:25:26.104Z"
+  },
+  {
+    "id": "LD-365375850",
+    "createdAt": "2025-05-04T11:53:13.653Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-05-04T11:53:13.653Z"
+    },
+    "customer": {
+      "name": "asd",
+      "email": "laundarymail@chefalicious.com",
+      "phone": "Not provided",
+      "address": "esdrfgdf"
+    },
+    "services": [
+      {
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 19
+      },
+      {
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1
+      }
+    ],
+    "pickup": {
+      "date": "2025-05-21T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 43.800000000000004,
+    "tax": 3.5040000000000004,
+    "total": 47.304,
+    "expectedDelivery": "2025-05-07T11:53:13.653Z"
+  },
+  {
+    "id": "LD-450740741",
+    "createdAt": "2025-05-04T11:59:04.507Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-05-04T11:59:04.507Z"
+    },
+    "customer": {
+      "name": "asd",
+      "email": "laundarymail@chefalicious.com",
+      "phone": "Not provided",
+      "address": "wdfgh"
+    },
+    "services": [
+      {
+        "id": "1",
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 8,
+        "items": {
+          "Blanket": 0,
+          "Bed Sheet": 0,
+          "Pillow Cover": 0,
+          "Shorts": 0,
+          "Nikkar": 0,
+          "Lower": 0,
+          "Civil Shirt": 0,
+          "School T-Shirt": 8,
+          "Jeans": 0,
+          "School Pant": 0,
+          "Sweater": 0,
+          "Shoes": 0,
+          "Civil T-Shirt": 0,
+          "Jacket": 0,
+          "Coat": 0
+        }
+      },
+      {
+        "id": "6",
+        "name": "Stain Treatment",
+        "price": 7.99,
+        "quantity": 1,
+        "items": []
+      }
+    ],
+    "pickup": {
+      "date": "2025-05-14T00:00:00.000Z",
+      "timeSlot": "\n                                2:00 - 4:00 PM\n                                Limited spots\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 23.91,
+    "tax": 1.9128,
+    "total": 25.8228,
+    "expectedDelivery": "2025-05-06T11:59:04.507Z"
+  },
+  {
+    "id": "LD-839464376",
+    "createdAt": "2025-05-04T12:42:08.394Z",
+    "status": "pending",
+    "statusHistory": {
+      "pending": "2025-05-04T12:42:08.394Z"
+    },
+    "customer": {
+      "name": "asd",
+      "email": "laundarymail@chefalicious.com",
+      "phone": "Not provided",
+      "address": "asd"
+    },
+    "services": [
+      {
+        "id": "1",
+        "name": "Wash & Fold",
+        "price": 1.99,
+        "quantity": 7,
+        "items": {
+          "Blanket": 0,
+          "Bed Sheet": 0,
+          "Pillow Cover": 0,
+          "Shorts": 0,
+          "Nikkar": 0,
+          "Lower": 7,
+          "Civil Shirt": 0,
+          "School T-Shirt": 0,
+          "Jeans": 0,
+          "School Pant": 0,
+          "Sweater": 0,
+          "Shoes": 0,
+          "Civil T-Shirt": 0,
+          "Jacket": 0,
+          "Coat": 0
+        }
+      },
+      {
+        "id": "2",
+        "name": "Dry Cleaning",
+        "price": 5.99,
+        "quantity": 1,
+        "items": []
+      }
+    ],
+    "pickup": {
+      "date": "2025-05-15T00:00:00.000Z",
+      "timeSlot": "\n                                6:00 - 8:00 PM\n                                Available\n                            ",
+      "specialInstructions": ""
+    },
+    "subtotal": 19.92,
+    "tax": 1.5936000000000001,
+    "total": 21.5136,
+    "expectedDelivery": "2025-05-07T12:42:08.394Z"
+  }
+]

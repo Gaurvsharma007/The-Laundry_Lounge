@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Login</title>
+    <script src="simple-auth.js"></script>
+</head>
+<body>
+    <h1>Basic Login Form</h1>
+    
+    <div>
+        <label>Email: <input type="text" id="email"></label><br><br>
+        <label>Password: <input type="password" id="password"></label><br><br>
+        <button id="loginButton">Login</button><br><br>
+        <div id="status" style="color: red;"></div>
+    </div>
+    
+    <hr>
+    <h2>Debug Actions</h2>
+    <button id="createUserButton">Create Demo User</button>
+    <button id="checkUsersButton">Check Users</button>
+    <button id="clearStorageButton">Clear Storage</button>
+    <button id="goToHomeButton">Go To Home</button>
+    
+    <hr>
+    <pre id="debug"></pre>
+    
+    <script>
+        // Debug display function
+        function log(message) {
+            console.log(message);
+            document.getElementById('debug').textContent += message + '\n';
+        }
+        
+        // Hash function (same as in SimpleAuth)
+        function hashPassword(password) {
+            let hash = 0;
+            for (let i = 0; i < password.length; i++) {
+                const char = password.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString(16);
+        }
+        
+        // Login button
+        document.getElementById('loginButton').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log('Login attempt with: ' + email);
+            
+            if (!email || !password) {
+                document.getElementById('status').textContent = 'Please enter both email and password';
+                return;
+            }
+            
+            if (typeof SimpleAuth === 'undefined') {
+                document.getElementById('status').textContent = 'SimpleAuth not available!';
+                return;
+            }
+            
+            try {
+                // Try to login
+                const result = SimpleAuth.login({
+                    email: email,
+                    password: password
+                });
+                
+                log('Login result: ' + JSON.stringify(result));
+                
+                document.getElementById('status').textContent = result.message;
+                
+                if (result.success) {
+                    document.getElementById('status').style.color = 'green';
+                    setTimeout(function() {
+                        window.location.href = 'laundary.html';
+                    }, 2000);
+                }
+            } catch(err) {
+                log('ERROR: ' + err.message);
+                document.getElementById('status').textContent = 'Error: ' + err.message;
+            }
+        });
+        
+        // Create demo user
+        document.getElementById('createUserButton').addEventListener('click', function() {
+            // Create user
+            const hashedPassword = hashPassword('password');
+            
+            const users = [{
+                id: '1',
+                firstName: 'Demo',
+                lastName: 'User',
+                email: 'demo@example.com',
+                phone: '1234567890',
+                password: hashedPassword,
+                createdAt: new Date().toISOString()
+            }];
+            
+            localStorage.setItem('laundryUsers', JSON.stringify(users));
+            log('Created demo user: demo@example.com / password');
+            document.getElementById('status').textContent = 'Demo user created!';
+            document.getElementById('status').style.color = 'green';
+        });
+        
+        // Check users
+        document.getElementById('checkUsersButton').addEventListener('click', function() {
+            const usersJson = localStorage.getItem('laundryUsers');
+            log('Users in storage: ' + usersJson);
+        });
+        
+        // Clear storage
+        document.getElementById('clearStorageButton').addEventListener('click', function() {
+            localStorage.clear();
+            log('LocalStorage cleared');
+        });
+        
+        // Go to home
+        document.getElementById('goToHomeButton').addEventListener('click', function() {
+            window.location.href = 'laundary.html';
+        });
+        
+        // Initial check
+        log('SimpleAuth available: ' + (typeof SimpleAuth !== 'undefined'));
+        if (typeof SimpleAuth !== 'undefined') {
+            log('Already logged in: ' + SimpleAuth.isLoggedIn());
+        }
+    </script>
+</body>
+</html> 

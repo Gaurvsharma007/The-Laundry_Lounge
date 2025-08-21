@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking Test</title>
+    <style>
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #333;
+        }
+        h1 {
+            color: #3dbdbd;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .sidebar {
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .main {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .card {
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #3dbdbd;
+            font-size: 18px;
+        }
+        button, input {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+        }
+        button {
+            background-color: #3dbdbd;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #299f9f;
+        }
+        input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .result {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 500px;
+            overflow: auto;
+        }
+        .order-list {
+            list-style: none;
+            padding: 0;
+        }
+        .order-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .order-item:hover {
+            background-color: #f1f5f9;
+        }
+        .order-status {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            margin-left: 5px;
+        }
+        .status-pending { background-color: #f59e0b; }
+        .status-processing { background-color: #3b82f6; }
+        .status-delivered { background-color: #10b981; }
+        .status-completed { background-color: #10b981; }
+        .status-ready { background-color: #8b5cf6; }
+        .status-delayed { background-color: #ef4444; }
+        .status-unknown { background-color: #6b7280; }
+    </style>
+</head>
+<body>
+    <h1>Order Tracking Test</h1>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="card">
+                <h3>Test Order ID Detection</h3>
+                <input type="text" id="messageInput" placeholder="Enter a message with an order ID">
+                <button id="detectButton">Detect Order ID</button>
+                <div id="detectResult" class="result" style="display:none;"></div>
+            </div>
+            
+            <div class="card">
+                <h3>Order Lookup</h3>
+                <input type="text" id="orderIdInput" placeholder="Enter order ID">
+                <button id="lookupButton">Lookup Order</button>
+                <div id="lookupResult" class="result" style="display:none;"></div>
+            </div>
+            
+            <div class="card">
+                <h3>Available Orders</h3>
+                <button id="listOrdersButton">List All Orders</button>
+                <div id="ordersList" class="order-list"></div>
+            </div>
+        </div>
+        
+        <div class="main">
+            <div class="card">
+                <h3>API Response Simulation</h3>
+                <input type="text" id="chatInput" placeholder="Enter a message for the chatbot">
+                <button id="chatButton">Send Message</button>
+                <div id="chatResult" class="result" style="display:none;"></div>
+            </div>
+            
+            <div class="card">
+                <h3>Debug Console</h3>
+                <div id="debugOutput" class="result">Order tracking test page loaded. Check browser console for more details.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="orders.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script src="js/order-debug.js"></script>
+    
+    <script>
+        // Initialize OrderManager if needed
+        if (typeof OrderManager !== 'undefined' && typeof OrderManager.init === 'function') {
+            OrderManager.init();
+            log('OrderManager initialized');
+        }
+        
+        // Helper to log to debug output
+        function log(message, data) {
+            const debugOutput = document.getElementById('debugOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage, data || '');
+            
+            if (data) {
+                try {
+                    logMessage += '\n' + JSON.stringify(data, null, 2);
+                } catch (e) {
+                    logMessage += '\n[Object cannot be stringified]';
+                }
+            }
+            
+            debugOutput.textContent = logMessage + '\n\n' + debugOutput.textContent;
+        }
+        
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detect Order ID
+            document.getElementById('detectButton').addEventListener('click', function() {
+                const message = document.getElementById('messageInput').value;
+                if (!message) return;
+                
+                const result = orderDebug.testOrderDetection(message);
+                
+                const detectResult = document.getElementById('detectResult');
+                detectResult.textContent = result || 'No order ID detected';
+                detectResult.style.display = 'block';
+                
+                log('Detected order ID', result);
+            });
+            
+            // Order Lookup
+            document.getElementById('lookupButton').addEventListener('click', function() {
+                const orderId = document.getElementById('orderIdInput').value;
+                if (!orderId) return;
+                
+                log('Looking up order', orderId);
+                
+                try {
+                    const result = orderDebug.testOrderTracking(orderId);
+                    
+                    const lookupResult = document.getElementById('lookupResult');
+                    if (typeof result === 'string') {
+                        lookupResult.textContent = result;
+                    } else {
+                        lookupResult.textContent = JSON.stringify(result, null, 2);
+                    }
+                    lookupResult.style.display = 'block';
+                } catch (error) {
+                    log('Error in order lookup', error.message);
+                }
+            });
+            
+            // List Orders
+            document.getElementById('listOrdersButton').addEventListener('click', function() {
+                log('Listing all orders');
+                
+                try {
+                    const orders = orderDebug.listAllOrders();
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+                    
+                    if (typeof orders === 'string') {
+                        ordersList.innerHTML = `<div class="order-item">${orders}</div>`;
+                        return;
+                    }
+                    
+                    if (orders && orders.length === 0) {
+                        ordersList.innerHTML = '<div class="order-item">No orders found</div>';
+                        return;
+                    }
+                    
+                    orders.forEach(order => {
+                        const statusClass = `status-${(order.status || 'unknown').toLowerCase()}`;
+                        const orderItem = document.createElement('div');
+                        orderItem.className = 'order-item';
+                        orderItem.innerHTML = `
+                            ${order.id} 
+                            <span class="order-status ${statusClass}">${order.status || 'Unknown'}</span>
+                        `;
+                        orderItem.addEventListener('click', function() {
+                            document.getElementById('orderIdInput').value = order.id;
+                            document.getElementById('lookupButton').click();
+                        });
+                        ordersList.appendChild(orderItem);
+                    });
+                } catch (error) {
+                    log('Error listing orders', error.message);
+                }
+            });
+            
+            // Chat Simulation
+            document.getElementById('chatButton').addEventListener('click', function() {
+                const message = document.getElementById('chatInput').value;
+                if (!message) return;
+                
+                log('Chat message sent', message);
+                
+                try {
+                    // Check for order ID in message
+                    const orderId = orderDebug.testOrderDetection(message);
+                    
+                    if (orderId) {
+                        log('Order ID found in message', orderId);
+                        
+                        // Get API instance
+                        const gemini = new GeminiAPI();
+                        
+                        // Force order lookup
+                        const response = gemini.forceOrderLookup(orderId);
+                        
+                        const chatResult = document.getElementById('chatResult');
+                        chatResult.textContent = response;
+                        chatResult.style.display = 'block';
+                    } else {
+                        log('No order ID found in message');
+                        
+                        const chatResult = document.getElementById('chatResult');
+                        chatResult.textContent = "I'd be happy to help you track your order. Please provide your order ID, which usually starts with 'LD-' followed by numbers (e.g., LD-123456789) or 'ORD' followed by numbers.";
+                        chatResult.style.display = 'block';
+                    }
+                } catch (error) {
+                    log('Error in chat simulation', error.message);
+                }
+            });
+            
+            // Check if order ID was mentioned in user query
+            if (window.location.href.includes('LD-476794114')) {
+                document.getElementById('orderIdInput').value = 'LD-476794114';
+                document.getElementById('lookupButton').click();
+            }
+            
+            // Trigger list orders on load
+            document.getElementById('listOrdersButton').click();
+        });
+    </script>
+</body>
+</html> 

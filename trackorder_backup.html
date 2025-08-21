@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- Add Tailwind CSS for the React component -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="orders.js"></script>
+    <title>Track Order - Laundry Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d5e6f3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 
+                        0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 
+                        0 5px 15px rgba(0, 0, 0, 0.07);
+        }
+        
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #4a6cf7 0%, #3b82f6 100%);
+        }
+        
+        h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+        
+        input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            background-color: #f8fafc;
+        }
+        
+        input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            background-color: #fff;
+        }
+        
+        input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 20px;
+        }
+        
+        button.track-btn {
+            padding: 18px 20px;
+            background: linear-gradient(90deg, #4a6cf7 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button.track-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        button.track-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        button.track-btn:hover:before {
+            transform: translateX(100%);
+        }
+        
+        .recent-orders {
+            margin-top: 40px;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .recent-orders h3 {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recent-orders h3:before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(to bottom, #4a6cf7, #3b82f6);
+            border-radius: 4px;
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .order-item:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .order-icon {
+            width: 40px;
+            height: 40px;
+            background: #e0e7ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #4f46e5;
+            flex-shrink: 0;
+        }
+        
+        .order-details {
+            flex: 1;
+        }
+        
+        .order-id {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .order-date {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .shipping-illustration {
+            width: 180px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                padding: 30px 20px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .shipping-illustration {
+                width: 140px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Loader styles */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error message */
+        .error-message {
+            display: none;
+            color: #ef4444;
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        /* Order details for React view */
+        #react-root {
+            width: 100%;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        #orderDetailsView {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .close-details {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            color: #64748b;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .close-details:hover {
+            background: #fff;
+            color: #1e293b;
+            transform: rotate(90deg);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Add Tailwind specific overrides to prevent conflicts */
+        #react-root [class*="text-"] {
+            color: inherit;
+        }
+        
+        /* CSS Animation for notification */
+        .notification-enter {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        .notification-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 300ms, transform 300ms;
+        }
+        .notification-exit {
+            opacity: 1;
+        }
+        .notification-exit-active {
+            opacity: 0;
+            transition: opacity 300ms;
+        }
+        
+        /* Fixed status update notification styles */
+        .status-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .status-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scroll to top button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 900;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .scroll-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-to-top:hover {
+            background: #2563eb;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* No order found styling */
+        #noOrderFound {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+        }
+        
+        #noOrderFound svg {
+            margin: 0 auto 15px;
+        }
+        
+        /* Custom scrollbar for better UI */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+        }
+    </style>
+    <!-- Add socket.io client script in the head section right after the other script imports -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+        <div class="container">
+        <div class="card">
+            <svg class="shipping-illustration float" viewBox="0 0 640 512" fill="#4a6cf7">
+                <path d="M112 0C85.5 0 64 21.5 64 48V96H16c-8.8 0-16 7.2-16 16s7.2 16 16 16H64 272c8.8 0 16 7.2 16 16s-7.2 16-16 16H64 48c-8.8 0-16 7.2-16 16s7.2 16 16 16H64 240c8.8 0 16 7.2 16 16s-7.2 16-16 16H64 16c-8.8 0-16 7.2-16 16s7.2 16 16 16H64 208c8.8 0 16 7.2 16 16s-7.2 16-16 16H64V416c0 53 43 96 96 96s96-43 96-96H384c0 53 43 96 96 96s96-43 96-96h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V288 256 237.3c0-17-6.7-33.3-18.7-45.3L512 114.7c-12-12-28.3-18.7-45.3-18.7H416V48c0-26.5-21.5-48-48-48H112zM544 237.3V256H416V160h50.7l77.3 77.3zM160 464c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm368-48c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48 48 21.5 48 48z"></path>
+            </svg>
+            <h1>Track Your Order</h1>
+            <p class="subtitle">Enter your order ID to check the status of your laundry</p>
+
+            <!-- Error message -->
+            <div class="error-message" id="errorMessage"></div>
+            
+            <!-- Form for tracking orders -->
+            <form id="trackForm" class="search-container">
+                <div class="input-group">
+                    <input type="text" id="orderId" placeholder="Enter your order ID (e.g., LD-123456)" autofocus required>
+                    <div class="icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <path d="M3.3 7l8.7 5 8.7-5"></path>
+                            <path d="M12 22V12"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <button type="submit" class="track-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Track Order
+                </button>
+            </form>
+            
+            <!-- Loading indicator -->
+            <div class="loading-spinner" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p class="mt-2">Loading order details...</p>
+            </div>
+                
+            <!-- No order found message -->
+            <div id="noOrderFound" style="display: none;">
+                <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h3 style="margin-top: 20px; color: #1e293b; font-weight: 600;">Order Not Found</h3>
+                <p style="color: #64748b; margin-top: 10px;">Please check the order ID and try again.</p>
+                <button onclick="document.getElementById('orderId').focus()" 
+                    style="margin-top: 15px; background: #f1f5f9; color: #475569; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s ease;">
+                    Try Again
+                </button>
+            </div>
+            
+            <!-- Recent Orders Section -->
+            <div class="recent-orders">
+                <h3>Recent Orders</h3>
+                <div id="recentOrdersList">
+                    <!-- Recent orders will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- React Order Details View -->
+    <div id="orderDetailsView">
+        <button class="close-details" id="closeDetailsBtn">×</button>
+        <div id="react-root"></div>
+    </div>
+    
+    <!-- Scroll to top button -->
+    <div class="scroll-to-top" id="scrollTopBtn">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <!-- React scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM Content Loaded - trackorder.html initializing");
+            
+            // Store current order globally
+            window.currentOrder = null;
+            
+            const orderIdInput = document.getElementById('orderId');
+            const trackForm = document.getElementById('trackForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const noOrderFound = document.getElementById('noOrderFound');
+            const errorMessageDiv = document.getElementById('errorMessage');
+            const orderDetailsView = document.getElementById('orderDetailsView');
+            const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            const recentOrdersList = document.getElementById('recentOrdersList');
+            
+            // Ensure OrderManager is initialized
+            if (typeof OrderManager === 'undefined') {
+                console.error("OrderManager is not loaded! Please check that orders.js is included in the page.");
+                showErrorMessage("Error: Order tracking system is not available. Please try again later.");
+                return;
+            }
+            
+            console.log("Initializing OrderManager...");
+            OrderManager.init();
+            
+            // Display the list of available order IDs for demo purposes
+            console.log("Available order IDs for testing:");
+            const allOrders = OrderManager.getAllOrders();
+            allOrders.forEach(order => {
+                console.log(`- ${order.id}`);
+            });
+            
+            // Populate recent orders list
+            populateRecentOrders();
+            
+            // Function to display an error message
+            function showErrorMessage(message) {
+                console.log("Showing error message:", message);
+                
+                errorMessageDiv.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444; margin-right: 10px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        ${message}
+                    </div>
+                `;
+                
+                errorMessageDiv.style.display = 'block';
+                
+                // Automatically hide error after 5 seconds
+                setTimeout(hideErrorMessage, 5000);
+            }
+            
+            // Function to hide the error message
+            function hideErrorMessage() {
+                errorMessageDiv.style.display = 'none';
+            }
+            
+            // Function to populate recent orders
+            function populateRecentOrders() {
+                console.log("Populating recent orders list");
+                
+                // Clear the list first
+                recentOrdersList.innerHTML = '';
+                
+                // Sort orders by creation date (most recent first)
+                const ordersToShow = OrderManager.getAllOrders()
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 3); // Show only the 3 most recent orders
+                
+                if (ordersToShow.length === 0) {
+                    recentOrdersList.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #64748b; background: #f8fafc; border-radius: 10px;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                                <line x1="8" y1="16" x2="16" y2="16"></line>
+                                <line x1="8" y1="8" x2="10" y2="8"></line>
+                            </svg>
+                            <p style="margin-top: 10px;">No recent orders found</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Add orders to the list
+                ordersToShow.forEach(order => {
+                    // Format date for display
+                    const orderDate = new Date(order.createdAt);
+                    const formattedDate = orderDate.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric', 
+                        year: 'numeric'
+                    });
+                    
+                    const formattedTime = orderDate.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Create status badge
+                    let statusColor = '#3b82f6'; // Default blue
+                    if (order.status.toLowerCase().includes('delivered')) {
+                        statusColor = '#10b981'; // Green for delivered
+                    } else if (order.status.toLowerCase().includes('processing')) {
+                        statusColor = '#f59e0b'; // Yellow for processing
+                    }
+                    
+                    const orderItem = document.createElement('div');
+                    orderItem.className = 'order-item';
+                    orderItem.innerHTML = `
+                        <div class="order-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <div class="order-details">
+                            <div class="order-id">
+                                ${order.id}
+                                <span class="status-badge" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background-color: ${statusColor}; color: white;">${order.status}</span>
+                            </div>
+                            <div class="order-date">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                ${formattedDate} at ${formattedTime}
+                            </div>
+                        </div>
+                    `;
+                    
+                    orderItem.addEventListener('click', function() {
+                        orderIdInput.value = order.id;
+                        trackForm.dispatchEvent(new Event('submit'));
+                    });
+                    
+                    recentOrdersList.appendChild(orderItem);
+                });
+            }
+            
+            // Function to track an order by ID
+            function trackOrder(orderId) {
+                if (!orderId) {
+                    return null;
+                }
+                
+                console.log("Tracking order with ID:", orderId);
+                
+                // Use OrderManager to find the order
+                if (!window.OrderManager) {
+                    console.error("OrderManager not loaded");
+                    throw new Error("Order tracking system is currently unavailable");
+                }
+                
+                const order = window.OrderManager.getOrderById(orderId);
+                console.log("Order found:", order ? "Yes" : "No");
+                return order;
+            }
+            
+            // Scroll to top functionality
+            window.addEventListener('scroll', function() {
+                if (document.documentElement.scrollTop > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+            
+            scrollTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Close order details view
+            closeDetailsBtn.addEventListener('click', function() {
+                orderDetailsView.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Re-enable scrolling
+            });
+            
+            // Track order form submission
+            trackForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const orderId = orderIdInput.value.trim();
+                
+                // Validate order ID
+                if (!orderId) {
+                    showErrorMessage("Please enter a valid order ID");
+                    return;
+                }
+                
+                // Hide previous results and error message
+                noOrderFound.style.display = 'none';
+                orderDetailsView.style.display = 'none';
+                hideErrorMessage();
+                    
+                // Show loading indicator
+                loadingIndicator.style.display = 'block';
+                    
+                try {
+                    // Track the order
+                    const order = trackOrder(orderId);
+                    
+                    // Process order after a small delay to show loading indicator
+                    setTimeout(function() {
+                        // Process the order result
+                        if (order) {
+                            console.log("Order found! Showing details...");
+                            
+                            // Store current order globally for React component
+                            window.currentOrder = {
+                                orderId: order.id,
+                                orderDate: new Date(order.createdAt).toLocaleDateString('en-US', {
+                                    month: 'long',
+                                    day: 'numeric', 
+                                    year: 'numeric'
+                                }),
+                                orderTime: new Date(order.createdAt).toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }),
+                                estimatedDelivery: new Date(order.expectedDelivery).toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    month: 'long',
+                                    day: 'numeric'
+                                }),
+                                status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
+                                total: order.total || 0,
+                                
+                                // Status steps based on the order's status history
+                                statusSteps: [
+                                    {
+                                        name: "Order Placed",
+                                        completed: true,
+                                        date: new Date(order.statusHistory.pending || order.createdAt).toLocaleString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })
+                                    },
+                                    {
+                                        name: "Processing",
+                                        completed: order.statusHistory.processing || 
+                                                 order.status === "processing" || 
+                                                 order.status === "ready" ||
+                                                 order.status === "delivered",
+                                        date: order.statusHistory.processing ? 
+                                              new Date(order.statusHistory.processing).toLocaleString('en-US', {
+                                                  month: 'short',
+                                                  day: 'numeric',
+                                                  hour: '2-digit',
+                                                  minute: '2-digit'
+                                              }) : "Pending"
+                                    },
+                                    {
+                                        name: "Ready for Pickup/Delivery",
+                                        completed: order.statusHistory.ready || 
+                                                 order.status === "ready" ||
+                                                 order.status === "delivered",
+                                        date: order.statusHistory.ready ? 
+                                              new Date(order.statusHistory.ready).toLocaleString('en-US', {
+                                                  month: 'short',
+                                                  day: 'numeric',
+                                                  hour: '2-digit',
+                                                  minute: '2-digit'
+                                              }) : "Pending"
+                                    },
+                                    {
+                                        name: "Delivered",
+                                        completed: order.statusHistory.delivered || 
+                                                 order.status === "delivered",
+                                        date: order.statusHistory.delivered ? 
+                                              new Date(order.statusHistory.delivered).toLocaleString('en-US', {
+                                                  month: 'short',
+                                                  day: 'numeric',
+                                                  hour: '2-digit',
+                                                  minute: '2-digit'
+                                              }) : "Pending"
+                                    }
+                                ],
+                                
+                                // Services - based on order items
+                                services: [
+                                    {
+                                        name: "Regular Wash",
+                                        details: "Standard washing for all types of clothes",
+                                        selected: order.services?.includes("regular") || true
+                                    },
+                                    {
+                                        name: "Express Service",
+                                        details: "24-hour turnaround time",
+                                        selected: order.services?.includes("express") || false
+                                    },
+                                    {
+                                        name: "Delicate Items",
+                                        details: "Special care for delicate fabrics",
+                                        selected: order.services?.includes("delicate") || false
+                                    },
+                                    {
+                                        name: "Dry Cleaning",
+                                        details: "Professional dry cleaning service",
+                                        selected: order.services?.includes("dry-clean") || false
+                                    },
+                                    {
+                                        name: "Ironing",
+                                        details: "Professional pressing service",
+                                        selected: order.services?.includes("ironing") || order.services?.includes("iron") || false
+                                    },
+                                    {
+                                        name: "Stain Removal",
+                                        details: "Special treatment for tough stains",
+                                        selected: order.services?.includes("stain") || false
+                                    }
+                                ].filter(service => service.selected || Math.random() < 0.3)
+                            };
+                            
+                            // Hide loading indicator
+                            loadingIndicator.style.display = 'none';
+                            
+                            // Show order details view with fade in effect
+                            orderDetailsView.style.opacity = 0;
+                            orderDetailsView.style.display = 'block';
+                            document.body.style.overflow = 'hidden'; // Prevent scrolling of background
+                            
+                            // Render React component
+                            renderOrderTrackingUI(order.id);
+                            
+                            // Fade in animation
+                            setTimeout(() => {
+                                orderDetailsView.style.transition = 'opacity 0.3s ease';
+                                orderDetailsView.style.opacity = 1;
+                            }, 10);
+                            
+                        } else {
+                            console.log("Order not found!");
+                            
+                            // Hide loading indicator
+                            loadingIndicator.style.display = 'none';
+                            
+                            // Show no order found message
+                            noOrderFound.style.display = 'block';
+                            noOrderFound.style.opacity = 0;
+                            
+                            // Fade in animation
+                            setTimeout(() => {
+                                noOrderFound.style.transition = 'opacity 0.3s ease';
+                                noOrderFound.style.opacity = 1;
+                            }, 10);
+                        }
+                    }, 800); // Show loading for at least 800ms for better UX
+                } catch (error) {
+                    console.error("Error tracking order:", error);
+                    
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    
+                    // Show error message
+                    showErrorMessage(error.message || "There was an error tracking your order. Please try again.");
+                }
+            });
+            
+            // Initialize socket connection if available
+            if (typeof io !== 'undefined') {
+                try {
+                    console.log("Socket.io is available. Attempting to connect...");
+                    const socket = io();
+                    
+                    socket.on('connect', function() {
+                        console.log("Socket connected successfully with ID:", socket.id);
+                    });
+                    
+                    socket.on('connect_error', function(error) {
+                        console.error("Socket connection error:", error);
+                    });
+                    
+                    socket.on('orderStatusUpdate', function(data) {
+                        console.log("Received order status update:", data);
+                        
+                        // Check if this update is for the currently viewed order
+                        if (window.currentOrder && data.orderId === window.currentOrder.orderId) {
+                            console.log("Update is for the currently viewed order. Refreshing...");
+                            
+                            // Re-fetch the order and update the view
+                            const updatedOrder = OrderManager.getOrderById(data.orderId);
+                            if (updatedOrder) {
+                                // Re-render with updated order
+                                trackForm.dispatchEvent(new Event('submit'));
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error initializing socket:", error);
+                }
+            } else {
+                console.log("Socket.io is not available. Real-time updates disabled.");
+            }
+        });
+    </script>
+    
+    <!-- React Component -->
+    <script type="text/babel">
+        // Create React component for order tracking using the Tailwind UI
+        const TrackYourOrder = ({ orderId }) => {
+            const [notification, setNotification] = React.useState(null);
+            const orderDetails = window.currentOrder;
+
+            React.useEffect(() => {
+                // Show a notification when the component mounts
+                setNotification("Order details loaded successfully");
+
+                // Hide the notification after 3 seconds
+                const timer = setTimeout(() => {
+                    setNotification(null);
+                }, 3000);
+
+                // Clean up on unmount
+                return () => clearTimeout(timer);
+            }, []);
+
+            if (!orderDetails) {
+                return (
+                    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+                        <div className="text-center py-12">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Not Found</h2>
+                            <p className="text-gray-600 mb-6">We couldn't find any order with the provided ID. Please check and try again.</p>
+                            <button 
+                                onClick={() => window.location.href = 'trackorder.html'} 
+                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300"
+                            >
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Icon components
+            const iconComponents = {
+                Package: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5 2a1 1 0 00-1 1v1h10V3a1 1 0 00-1-1H5zM4 6a1 1 0 001 1h10a1 1 0 001-1V5H4v1zm-1 5v5a1 1 0 001 1h10a1 1 0 001-1v-5h1a1 1 0 100-2h-1V7h1a1 1 0 100-2h-1V3a3 3 0 00-3-3H5a3 3 0 00-3 3v2H1a1 1 0 000 2h1v2H1a1 1 0 100 2h2z" clipRule="evenodd" />
+                    </svg>
+                ),
+                Calendar: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                    </svg>
+                ),
+                Clock: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                ),
+                Truck: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1v-5h2a1 1 0 00.97-.757l1-4A1 1 0 0014 4H3zm9.5 8.5h-6V6h6v6.5z" />
+                    </svg>
+                ),
+                ArrowRight: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                ),
+                Cog: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                    </svg>
+                ),
+                CheckBadge: () => (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                )
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+                    {notification && (
+                        <div className="status-notification show">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            {notification}
+                        </div>
+                    )}
+                    
+                    <div className="relative overflow-hidden rounded-t-lg -mx-6 -mt-6 mb-10">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-400 pt-12 pb-8 px-6">
+                            <div className="flex justify-between items-start">
+                                <h1 className="text-3xl font-bold text-white mb-2">Track Your Order</h1>
+                                <span className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                                    #{orderDetails.orderId}
+                                </span>
+                            </div>
+                            <p className="text-blue-100 text-sm">
+                                Order placed on {orderDetails.orderDate} at {orderDetails.orderTime}
+                            </p>
+                        </div>
+                        <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-16 -translate-y-8">
+                            <div className="absolute inset-0 bg-white rounded-full opacity-10"></div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-40 h-40 transform -translate-x-16 translate-y-8">
+                            <div className="absolute inset-0 bg-white rounded-full opacity-10"></div>
+                        </div>
+                    </div>
+                    
+                    {/* Order Status Badge */}
+                    <div className="flex justify-center -mt-14 mb-8 relative z-10">
+                        <div className="bg-white shadow-lg rounded-full px-8 py-3 flex items-center border-2 border-blue-500 transition-all duration-300 hover:shadow-xl">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${
+                                orderDetails.status.includes("Delivered") ? "bg-green-500" : 
+                                (orderDetails.status.includes("Ready") || orderDetails.status.includes("Processing")) ? "bg-yellow-500" : "bg-blue-500"
+                            }`}></div>
+                            <span className="font-medium text-gray-800">{orderDetails.status}</span>
+                        </div>
+                    </div>
+                    
+                    {/* Order Information */}
+                    <div className="bg-gray-50 p-6 rounded-lg mb-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100">
+                        <div className="flex flex-col md:flex-row justify-between mb-4">
+                            <div className="mb-4 md:mb-0">
+                                <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                                    <span className="w-9 h-9 flex items-center justify-center bg-blue-500 text-white rounded-full mr-3 shadow-sm">
+                                        <iconComponents.Package />
+                                    </span>
+                                    Order Information
+                                </h2>
+                                <div className="flex items-center mb-3 pl-3 border-l-3 border-blue-200">
+                                    <iconComponents.Calendar />
+                                    <span className="text-gray-600 mr-2">Order Date:</span>
+                                    <span className="font-medium">{orderDetails.orderDate}</span>
+                                </div>
+                                <div className="flex items-center pl-3 border-l-3 border-blue-200">
+                                    <iconComponents.Clock />
+                                    <span className="text-gray-600 mr-2">Order Time:</span>
+                                    <span className="font-medium">{orderDetails.orderTime}</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                                    <span className="w-9 h-9 flex items-center justify-center bg-blue-500 text-white rounded-full mr-3 shadow-sm">
+                                        <iconComponents.Truck />
+                                    </span>
+                                    Delivery Estimate
+                                </h2>
+                                <div className="flex items-center mb-3 pl-3 border-l-3 border-green-200">
+                                    <span className="text-gray-600 mr-2">Estimated Delivery:</span>
+                                    <span className="font-medium">{orderDetails.estimatedDelivery}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Order Tracking */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                            <span className="w-9 h-9 flex items-center justify-center bg-blue-500 text-white rounded-full mr-3 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                </svg>
+                            </span>
+                            Order Timeline
+                        </h2>
+                        <div className="p-6 bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 border border-gray-100">
+                            <div className="space-y-8">
+                                {orderDetails.statusSteps.map((step, index) => (
+                                    <div key={index} className="flex">
+                                        <div className="flex flex-col items-center mr-5">
+                                            <div className={`rounded-full flex items-center justify-center w-9 h-9 ${
+                                                step.completed 
+                                                    ? "bg-green-100 text-green-500 border-2 border-green-500" 
+                                                    : "bg-gray-100 text-gray-400 border-2 border-gray-300"
+                                            } transition-colors duration-300`}>
+                                                {step.completed ? 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg> : 
+                                                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                                }
+                                            </div>
+                                            {index < orderDetails.statusSteps.length - 1 && (
+                                                <div className={`h-16 w-0.5 ${step.completed ? "bg-green-500" : "bg-gray-200"} transition-colors duration-300`}></div>
+                                            )}
+                                        </div>
+                                        <div className="pb-8">
+                                            <div className={`font-medium text-base ${step.completed ? "text-green-600" : "text-gray-500"}`}>
+                                                {step.name}
+                                            </div>
+                                            <div className="text-sm text-gray-500 flex items-center mt-1">
+                                                {step.completed && (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                    </svg>
+                                                )}
+                                                {step.date}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Services Details */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                            <span className="w-9 h-9 flex items-center justify-center bg-blue-500 text-white rounded-full mr-3 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                    <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                                </svg>
+                            </span>
+                            Service Details
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {orderDetails.services.map((service, index) => (
+                                <div key={index} className={`relative overflow-hidden rounded-lg shadow-sm hover:shadow transition-all duration-300 ${service.selected ? "bg-blue-50 border border-blue-200" : "border border-gray-200 bg-gray-50"}`}>
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <h3 className="font-medium text-gray-800">{service.name}</h3>
+                                            {service.selected && (
+                                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                    <iconComponents.CheckBadge />
+                                                    Selected
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-sm text-gray-600">{service.details}</p>
+                                    </div>
+                                    {service.selected && (
+                                        <div className="absolute top-0 right-0 w-12 h-12 transform translate-x-6 -translate-y-6">
+                                            <div className="absolute inset-0 bg-blue-500 rounded-full opacity-10"></div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Order Total */}
+                    <div className="mb-8 overflow-hidden rounded-lg relative">
+                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-lg font-semibold">Order Total</h3>
+                                <div className="text-2xl font-bold">
+                                    ${typeof orderDetails.total === 'number' ? orderDetails.total.toFixed(2) : orderDetails.total}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="absolute top-0 right-0 w-16 h-16 transform translate-x-8 -translate-y-8">
+                            <div className="absolute inset-0 bg-white rounded-full opacity-10"></div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-20 h-20 transform -translate-x-10 translate-y-10">
+                            <div className="absolute inset-0 bg-white rounded-full opacity-10"></div>
+                        </div>
+                    </div>
+                    
+                    {/* Contact Support */}
+                    <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="bg-gray-50 p-6 border border-gray-200">
+                            <h3 className="text-lg font-medium mb-2 text-gray-800">Need Help?</h3>
+                            <p className="text-gray-600 mb-4">If you have any questions about your order, feel free to contact us.</p>
+                            <button 
+                                onClick={() => window.location.href = 'complaint1.html'} 
+                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
+                            >
+                                Contact Support
+                                <iconComponents.ArrowRight />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Function to render the React component
+        function renderOrderTrackingUI(orderId) {
+            const root = ReactDOM.createRoot(document.getElementById('react-root'));
+            root.render(<TrackYourOrder orderId={orderId} />);
+        }
+    </script>
+</body>
+</html> 

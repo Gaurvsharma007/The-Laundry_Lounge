@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Lounge - Public Services</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+        }
+        
+        body {
+            background: linear-gradient(to bottom right, #ecfeff, #dbeafe);
+            min-height: 100vh;
+        }
+        
+        nav {
+            background: linear-gradient(to right, #06b6d4, #14b8a6);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            height: 64px;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .logo-container {
+            height: 40px;
+            width: 40px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            padding: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 64px);
+            padding: 2rem 1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 32rem;
+            transition: all 0.3s ease;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+        
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+        
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(to right, #06b6d4, #14b8a6);
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .step-circle {
+            height: 2.5rem;
+            width: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .step-active {
+            background: linear-gradient(to right, #06b6d4, #14b8a6);
+            color: white;
+        }
+        
+        .step-inactive {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .step-label {
+            font-size: 0.75rem;
+        }
+        
+        .step-label-active {
+            color: #0e7490;
+        }
+        
+        .step-label-inactive {
+            color: #6b7280;
+        }
+        
+        .services-group {
+            padding: 1rem;
+            background: linear-gradient(to right, #ecfeff, #dbeafe);
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .service-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .service-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .service-option input[type="checkbox"] {
+            margin-bottom: 0.5rem;
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+        
+        .service-image {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 0.75rem;
+            border-radius: 50%;
+            background-color: #ecfeff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .service-option label {
+            font-weight: 500;
+            font-size: 1.1rem;
+            color: #0e7490;
+            margin-top: 0.5rem;
+        }
+        
+        .service-description {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        
+        .success-message {
+            text-align: center;
+        }
+        
+        .success-icon {
+            height: 6rem;
+            width: 6rem;
+            background-color: #d1fae5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            animation: scaleIn 0.5s ease-in-out;
+        }
+        
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .success-text {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .animate-scaleIn {
+            animation: scaleIn 0.5s ease-in-out;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .services-group {
+                flex-direction: column;
+            }
+            
+            .service-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="navbar-content">
+            <div class="logo-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+                </svg>
+            </div>
+            <span class="navbar-brand">Laundry Lounge</span>
+        </div>
+    </nav>
+    
+    <main>
+        <div id="app-container">
+            <!-- Step Indicator -->
+            <div class="step-indicator" id="stepIndicator">
+                <div class="step">
+                    <div class="step-circle step-active" id="step1Circle">1</div>
+                    <span class="step-label step-label-active" id="step1Label">Information</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle step-inactive" id="step2Circle">2</div>
+                    <span class="step-label step-label-inactive" id="step2Label">Services</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle step-inactive" id="step3Circle">3</div>
+                    <span class="step-label step-label-inactive" id="step3Label">Confirmation</span>
+                </div>
+            </div>
+            
+            <!-- User Information Form -->
+            <div class="card" id="userInfoForm">
+                <h2>Public Laundry Service</h2>
+                <form id="infoForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <button type="submit">Next</button>
+                </form>
+            </div>
+            
+            <!-- Services Form -->
+            <div class="card" id="servicesForm" style="display: none;">
+                <h2>Select Services</h2>
+                <form id="serviceSelectionForm">
+                    <div class="services-group">
+                        <div class="service-option" onclick="toggleService('dryClean')">
+                            <div class="service-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+                                </svg>
+                            </div>
+                            <input type="checkbox" id="dryClean" name="service" value="dryClean">
+                            <label for="dryClean">Dry Clean</label>
+                            <div class="service-description">Professional cleaning for delicate fabrics</div>
+                        </div>
+                        <div class="service-option" onclick="toggleService('chemicalWash')">
+                            <div class="service-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                            </div>
+                            <input type="checkbox" id="chemicalWash" name="service" value="chemicalWash">
+                            <label for="chemicalWash">Chemical Wash</label>
+                            <div class="service-description">Deep cleaning for tough stains</div>
+                        </div>
+                        <div class="service-option" onclick="toggleService('iron')">
+                            <div class="service-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 16h12a4 4 0 0 0 4-4V8a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v4a4 4 0 0 0 4 4Z"/>
+                                    <path d="m18 8-8 6-4-3"/>
+                                </svg>
+                            </div>
+                            <input type="checkbox" id="iron" name="service" value="iron">
+                            <label for="iron">Iron</label>
+                            <div class="service-description">Professional pressing for wrinkle-free clothes</div>
+                        </div>
+                    </div>
+                    <div class="button-group" style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                        <button type="button" id="backToInfoButton" class="back-button" style="background: white; color: #4b5563; border: 1px solid #d1d5db; width: auto; padding: 0.5rem 1rem;">Back</button>
+                        <button type="submit" style="width: auto; padding: 0.5rem 1.5rem;">Next</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Confirmation Step -->
+            <div class="card" id="confirmationForm" style="display: none;">
+                <h2>Confirm Your Order</h2>
+                <div id="orderSummary" style="margin-bottom: 2rem;">
+                    <p><strong>Name:</strong> <span id="summaryName"></span></p>
+                    <p><strong>Address:</strong> <span id="summaryAddress"></span></p>
+                    <p><strong>Phone:</strong> <span id="summaryPhone"></span></p>
+                    <p><strong>Email:</strong> <span id="summaryEmail"></span></p>
+                    <p><strong>Services:</strong> <span id="summaryServices"></span></p>
+                </div>
+                <div class="button-group" style="display: flex; justify-content: space-between;">
+                    <button type="button" id="backToServicesButton" class="back-button" style="background: white; color: #4b5563; border: 1px solid #d1d5db; width: auto; padding: 0.5rem 1rem;">Back</button>
+                    <button type="button" id="confirmOrderButton" style="width: auto; padding: 0.5rem 1.5rem;">Confirm Order</button>
+                </div>
+            </div>
+            
+            <!-- Success Message -->
+            <div class="card animate-fadeIn" id="successMessage" style="display: none;">
+                <div class="success-message">
+                    <div class="success-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h2 class="success-title">Order Successfully Placed!</h2>
+                    <p class="success-text">Thank you for using Laundry Lounge. Your laundry will be processed soon.</p>
+                    <button id="newOrderButton">Place Another Order</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // DOM Elements
+        const userInfoForm = document.getElementById('userInfoForm');
+        const servicesForm = document.getElementById('servicesForm');
+        const confirmationForm = document.getElementById('confirmationForm');
+        const successMessage = document.getElementById('successMessage');
+        
+        const infoForm = document.getElementById('infoForm');
+        const serviceSelectionForm = document.getElementById('serviceSelectionForm');
+        
+        const backToInfoButton = document.getElementById('backToInfoButton');
+        const backToServicesButton = document.getElementById('backToServicesButton');
+        const confirmOrderButton = document.getElementById('confirmOrderButton');
+        const newOrderButton = document.getElementById('newOrderButton');
+        
+        // Step indicators
+        const step1Circle = document.getElementById('step1Circle');
+        const step2Circle = document.getElementById('step2Circle');
+        const step3Circle = document.getElementById('step3Circle');
+        const step1Label = document.getElementById('step1Label');
+        const step2Label = document.getElementById('step2Label');
+        const step3Label = document.getElementById('step3Label');
+        
+        // Summary elements
+        const summaryName = document.getElementById('summaryName');
+        const summaryAddress = document.getElementById('summaryAddress');
+        const summaryPhone = document.getElementById('summaryPhone');
+        const summaryEmail = document.getElementById('summaryEmail');
+        const summaryServices = document.getElementById('summaryServices');
+        
+        // Form Data
+        let formData = {
+            name: '',
+            address: '',
+            phoneNumber: '',
+            email: ''
+        };
+        
+        let services = {
+            dryClean: false,
+            chemicalWash: false,
+            iron: false
+        };
+        
+        // Toggle service checkbox
+        function toggleService(serviceId) {
+            const checkbox = document.getElementById(serviceId);
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+        }
+        
+        // Event Listeners
+        infoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Save form data
+            formData.name = document.getElementById('name').value;
+            formData.address = document.getElementById('address').value;
+            formData.phoneNumber = document.getElementById('phoneNumber').value;
+            formData.email = document.getElementById('email').value;
+            
+            // Move to next step
+            userInfoForm.style.display = 'none';
+            servicesForm.style.display = 'block';
+            
+            // Update step indicators
+            step1Circle.classList.remove('step-active');
+            step1Circle.classList.add('step-inactive');
+            step2Circle.classList.remove('step-inactive');
+            step2Circle.classList.add('step-active');
+            
+            step1Label.classList.remove('step-label-active');
+            step1Label.classList.add('step-label-inactive');
+            step2Label.classList.remove('step-label-inactive');
+            step2Label.classList.add('step-label-active');
+        });
+        
+        serviceSelectionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Save services data
+            const serviceCheckboxes = document.querySelectorAll('input[name="service"]');
+            serviceCheckboxes.forEach(checkbox => {
+                services[checkbox.value] = checkbox.checked;
+            });
+            
+            // Update order summary
+            summaryName.textContent = formData.name;
+            summaryAddress.textContent = formData.address;
+            summaryPhone.textContent = formData.phoneNumber;
+            summaryEmail.textContent = formData.email;
+            
+            // Display selected services
+            const selectedServices = [];
+            if (services.dryClean) selectedServices.push('Dry Clean');
+            if (services.chemicalWash) selectedServices.push('Chemical Wash');
+            if (services.iron) selectedServices.push('Iron');
+            
+            summaryServices.textContent = selectedServices.length > 0 ? 
+                selectedServices.join(', ') : 'None selected';
+            
+            // Move to next step
+            servicesForm.style.display = 'none';
+            confirmationForm.style.display = 'block';
+            
+            // Update step indicators
+            step2Circle.classList.remove('step-active');
+            step2Circle.classList.add('step-inactive');
+            step3Circle.classList.remove('step-inactive');
+            step3Circle.classList.add('step-active');
+            
+            step2Label.classList.remove('step-label-active');
+            step2Label.classList.add('step-label-inactive');
+            step3Label.classList.remove('step-label-inactive');
+            step3Label.classList.add('step-label-active');
+        });
+        
+        backToInfoButton.addEventListener('click', () => {
+            servicesForm.style.display = 'none';
+            userInfoForm.style.display = 'block';
+            
+            // Update step indicators
+            step2Circle.classList.remove('step-active');
+            step2Circle.classList.add('step-inactive');
+            step1Circle.classList.remove('step-inactive');
+            step1Circle.classList.add('step-active');
+            
+            step2Label.classList.remove('step-label-active');
+            step2Label.classList.add('step-label-inactive');
+            step1Label.classList.remove('step-label-inactive');
+            step1Label.classList.add('step-label-active');
+        });
+        
+        backToServicesButton.addEventListener('click', () => {
+            confirmationForm.style.display = 'none';
+            servicesForm.style.display = 'block';
+            
+            // Update step indicators
+            step3Circle.classList.remove('step-active');
+            step3Circle.classList.add('step-inactive');
+            step2Circle.classList.remove('step-inactive');
+            step2Circle.classList.add('step-active');
+            
+            step3Label.classList.remove('step-label-active');
+            step3Label.classList.add('step-label-inactive');
+            step2Label.classList.remove('step-label-inactive');
+            step2Label.classList.add('step-label-active');
+        });
+        
+        confirmOrderButton.addEventListener('click', () => {
+            // Show success message
+            confirmationForm.style.display = 'none';
+            document.getElementById('stepIndicator').style.display = 'none';
+            successMessage.style.display = 'block';
+        });
+        
+        newOrderButton.addEventListener('click', () => {
+            // Reset forms
+            infoForm.reset();
+            serviceSelectionForm.reset();
+            
+            // Reset services
+            Object.keys(services).forEach(key => {
+                services[key] = false;
+            });
+            
+            // Go back to first step
+            successMessage.style.display = 'none';
+            document.getElementById('stepIndicator').style.display = 'flex';
+            userInfoForm.style.display = 'block';
+            confirmationForm.style.display = 'none';
+            
+            // Reset step indicators
+            step3Circle.classList.remove('step-active');
+            step3Circle.classList.add('step-inactive');
+            step1Circle.classList.remove('step-inactive');
+            step1Circle.classList.add('step-active');
+            
+            step3Label.classList.remove('step-label-active');
+            step3Label.classList.add('step-label-inactive');
+            step1Label.classList.remove('step-label-inactive');
+            step1Label.classList.add('step-label-active');
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,2558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheLaundryLounge | Premium Laundry Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="js/chatbot.css">
+    <script src="orders.js"></script>
+    <script src="simple-auth.js"></script>
+    <script src="users.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script src="js/chatbot.js"></script>
+    <style>
+        :root {
+            --primary-color: #3dbdbd;
+            --primary-dark: #299f9f;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-dark: #333;
+            --text-light: #fff;
+            --text-muted: #6c757d;
+            --transition-speed: 0.3s;
+            --border-radius: 10px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            overflow-x: hidden;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* General utility classes */
+        .container {
+            width: 100%;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(61, 189, 189, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(61, 189, 189, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .btn-lg {
+            padding: 14px 35px;
+            font-size: 1.1rem;
+        }
+
+        .section-padding {
+            padding: 100px 0;
+        }
+
+        .section-heading {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--text-dark);
+            position: relative;
+            padding-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border-radius: 50px;
+        }
+
+        .section-subheading {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .header.scrolled {
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .header.scrolled .header-container {
+            height: 60px;
+        }
+
+        .header.scrolled .logo img {
+            transform: scale(0.9);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 2rem;
+            position: relative;
+            transition: padding 0.3s ease;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Add a divider between logo and navigation */
+        .nav-divider {
+            height: 28px;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1), transparent);
+            margin: 0 10px;
+            display: none;
+        }
+        
+        @media (min-width: 1200px) {
+            .nav-divider {
+                display: block;
+            }
+            
+            .header-container {
+                justify-content: flex-start;
+            }
+            
+            .nav-links {
+                margin-left: auto;
+            }
+        }
+        
+        /* Updated logo styles */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo img {
+            height: 42px;
+            width: auto;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            border-radius: 8px;
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            letter-spacing: -0.5px;
+        }
+        
+        /* Updated navigation styles */
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .nav-item a i {
+            font-size: 1.1em;
+            transition: var(--transition-speed);
+            position: relative;
+        }
+        
+        .nav-item a:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+            background-color: rgba(61, 189, 189, 0.05);
+        }
+        
+        .nav-item a:hover i {
+            transform: translateY(-3px) scale(1.2);
+            color: var(--primary-color);
+        }
+        
+        /* Active navigation item */
+        .nav-item.active a {
+            background-color: rgba(61, 189, 189, 0.12);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .nav-item.active a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            border-radius: 10px;
+        }
+        
+        /* User profile styling */
+        .nav-item.profile-button a {
+            background-color: rgba(61, 189, 189, 0.15);
+            border-radius: 50px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.profile-button a:hover {
+            background-color: rgba(61, 189, 189, 0.25);
+            transform: translateY(-3px);
+        }
+        
+        .nav-item.profile-button .user-name {
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        /* Button styling in navigation */
+        .nav-item.login-button a, 
+        .nav-item.signup-button a {
+            background: linear-gradient(135deg, rgba(61, 189, 189, 0.1) 0%, rgba(41, 159, 159, 0.1) 100%);
+            padding: 8px 16px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.login-button a:hover, 
+        .nav-item.signup-button a:hover {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(61, 189, 189, 0.3);
+        }
+        
+        .nav-item.login-button a i, 
+        .nav-item.signup-button a i {
+            color: var(--primary-color);
+        }
+        
+        .nav-item.login-button a:hover i, 
+        .nav-item.signup-button a:hover i {
+            color: #fff;
+        }
+        
+        /* Special styling for the operator item */
+        .nav-item.operator-link a {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(72, 52, 212, 0.1) 100%);
+            color: #6c5ce7;
+            padding: 8px 16px;
+            border-radius: 50px;
+            margin-left: 5px;
+        }
+        
+        .nav-item.operator-link a:hover {
+            background: linear-gradient(135deg, #6c5ce7 0%, #4834d4 100%);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+        }
+        
+        .nav-item.operator-link a i {
+            color: #6c5ce7;
+        }
+        
+        .nav-item.operator-link a:hover i {
+            color: #fff;
+        }
+        
+        /* Responsive mobile menu button */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        .menu-toggle span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: var(--text-dark);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle.active span:nth-child(1) {
+            transform: translateY(9px) rotate(45deg);
+        }
+        
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-toggle.active span:nth-child(3) {
+            transform: translateY(-9px) rotate(-45deg);
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 991px) {
+            .header-container {
+                padding: 0.75rem 1rem;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background-color: #fff;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 80px 30px 30px;
+                transition: right 0.4s ease;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+                gap: 15px;
+                z-index: 1000;
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .nav-item {
+                width: 100%;
+            }
+            
+            .nav-item a {
+                width: 100%;
+                padding: 12px 20px;
+                border-radius: 8px;
+            }
+            
+            .nav-item.active a::after {
+                display: none;
+            }
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .header-buttons .btn {
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .header-buttons .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(61, 189, 189, 0.2);
+        }
+        
+        .header-buttons .btn-outline {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .header-buttons .btn-outline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to bottom, var(--primary-color) 0%, var(--primary-dark) 100%);
+            transition: height 0.3s ease;
+            z-index: -1;
+            opacity: 0;
+        }
+        
+        .header-buttons .btn-outline:hover {
+            color: white;
+        }
+        
+        .header-buttons .btn-outline:hover::before {
+            height: 100%;
+            opacity: 1;
+        }
+        
+        .header-buttons .btn-admin {
+            background: linear-gradient(135deg, #6c5ce7 0%, #4834d4 100%);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            transition: var(--transition-speed);
+            cursor: pointer;
+            border: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        
+        .header-buttons .btn-admin:hover {
+            background: linear-gradient(135deg, #4834d4 0%, #6c5ce7 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+        
+        /* Welcome message section will be removed */
+        /* .welcome-section {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 80px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px 30px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 900;
+            border: 1px solid rgba(61, 189, 189, 0.1);
+        }
+        
+        .welcome-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            animation: welcome-bounce 3s infinite;
+        }
+        
+        @keyframes welcome-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(10deg); }
+        }
+        
+        .welcome-text {
+            font-weight: 600;
+            color: var(--text-dark);
+            position: relative;
+        }
+        
+        .typing-effect {
+            position: relative;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .typing-effect::after {
+            content: '|';
+            position: absolute;
+            right: -8px;
+            color: var(--primary-color);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        } */
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        /* Hero Section */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            background-color: #000; /* Matches black bars with background */
+        }
+        
+        .video-foreground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .video-foreground iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 aspect ratio */
+            min-height: 100%;
+            min-width: 177.77vh; /* 16:9 aspect ratio */
+            transform: translate(-50%, -50%);
+            border: 0;
+            object-fit: cover; /* Cover the container while maintaining aspect ratio */
+        }
+        
+        .video-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+            z-index: 1;
+        }
+        
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-top: 0; /* Removed margin-top to align with new header */
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            font-weight: 400;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out 0.3s;
+            animation-fill-mode: both;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeInUp 1s ease-out 0.6s;
+            animation-fill-mode: both;
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            animation: fadeInUp 1s ease-out 0.9s;
+            animation-fill-mode: both;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        .hero-feature i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .hero-feature span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .hero-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 3;
+            line-height: 0;
+            display: none; /* Hide the wave */
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Features Section (Why Choose Us) */
+        .features {
+            background-color: var(--secondary-color);
+            padding: 80px 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(61, 189, 189, 0.1) 0%, rgba(41, 159, 159, 0.1) 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Add decorative elements */
+        .shape-1, .shape-2 {
+            position: absolute;
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(61, 189, 189, 0.05) 0%, rgba(41, 159, 159, 0.05) 100%);
+            top: -100px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(61, 189, 189, 0.05) 0%, rgba(41, 159, 159, 0.05) 100%);
+            bottom: -200px;
+            right: -200px;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        /* Line connecting the steps */
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            z-index: -1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 25%;
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-icon {
+            margin-bottom: 20px;
+        }
+
+        .step-icon img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 200px;
+        }
+
+        /* Services Section */
+        .services {
+            background-color: white;
+            padding: 100px 0;
+        }
+
+        .services-container {
+            margin-top: 60px;
+        }
+
+        .service-row {
+            display: flex;
+            margin-bottom: 80px;
+            align-items: center;
+        }
+
+        .service-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .service-row:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .service-content, .service-image {
+            width: 50%;
+        }
+
+        .service-content {
+            padding: 0 50px;
+        }
+
+        .service-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .service-description {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .service-features {
+            margin-bottom: 30px;
+        }
+
+        .service-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .service-feature i {
+            color: var(--primary-color);
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .service-image {
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .service-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-row:hover .service-image img {
+            transform: scale(1.05);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background-color: var(--secondary-color);
+            padding: 100px 0;
+            overflow: hidden;
+        }
+
+        .testimonial-slider {
+            position: relative;
+            max-width: 1100px;
+            margin: 50px auto 30px;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+
+        .testimonial-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .testimonial-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--box-shadow);
+            margin: 0 15px;
+            min-width: calc(33.333% - 30px);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .quote-icon {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            opacity: 0.2;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .testimonial-author img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+
+        .author-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .author-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .testimonial-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: white;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .testimonial-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .testimonial-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        /* Stats Section */
+        .stats {
+            position: relative;
+            padding: 120px 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1545173168-9f1c6e67b31b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .stats-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* App Promo Section */
+        .app-promo {
+            padding: 100px 0;
+            background: linear-gradient(135deg, rgba(61, 189, 189, 0.05) 0%, rgba(41, 159, 159, 0.05) 100%);
+        }
+
+        .app-promo-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .app-promo-content {
+            flex: 1;
+        }
+
+        .app-promo-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .app-promo-content p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .app-features {
+            margin-bottom: 30px;
+        }
+
+        .app-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .app-feature i {
+            color: var(--primary-color);
+            background-color: rgba(61, 189, 189, 0.1);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .app-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .app-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-btn i {
+            font-size: 2rem;
+        }
+
+        .app-btn .small-text {
+            font-size: 0.7rem;
+            display: block;
+        }
+
+        .app-btn .big-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .app-promo-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .app-promo-image img {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Responsive Styles for new sections */
+        @media (max-width: 1100px) {
+            .testimonial-card {
+                min-width: calc(50% - 30px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .testimonial-card {
+                min-width: calc(100% - 30px);
+            }
+
+            .app-promo-container {
+                flex-direction: column;
+            }
+
+            .app-promo-image {
+                order: -1;
+                margin-bottom: 30px;
+            }
+
+            .app-buttons {
+                flex-direction: column;
+            }
+
+            .video-foreground iframe {
+                width: 300vw; /* Makes video wider on mobile to ensure coverage */
+                height: 150vh;
+                min-width: unset;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+        .footer-top {
+            padding: 80px 0 50px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo img {
+            height: 40px;
+        }
+
+        .footer-logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .footer-info p {
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .footer-links h3, .footer-contact h3 {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-links h3::after, .footer-contact h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .contact-item {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .contact-item i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+
+        .contact-item p {
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .footer-bottom {
+            background-color: #111;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Chat Button */
+        .chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .chat-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1500;
+            overflow: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 2;
+        }
+
+        .close-modal:hover {
+            color: var(--primary-color);
+        }
+
+        /* Operator Login Styles */
+        .operator-login {
+            padding: 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header img {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .login-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-with-icon input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(61, 189, 189, 0.2);
+            outline: none;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .remember-me label {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(61, 189, 189, 0.3);
+        }
+
+        .login-footer {
+            margin-top: 25px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Additional responsive styles */
+        @media (max-width: 576px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .operator-login {
+                padding: 30px 20px;
+            }
+        }
+
+        /* Image Slider Styles */
+        .image-slider {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .slider-item {
+            min-width: 100%;
+            height: 400px;
+        }
+
+        .slider-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            z-index: 10;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .slider-btn:hover {
+            background-color: white;
+            color: var(--primary-dark);
+        }
+
+        .slider-btn.prev {
+            left: 20px;
+        }
+
+        .slider-btn.next {
+            right: 20px;
+        }
+
+        /* Video Section Styles */
+        .video-section {
+            padding: 100px 0;
+            background-color: var(--secondary-color);
+        }
+
+        .video-container {
+            margin-top: 50px;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .video-wrapper {
+            flex: 1;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-content {
+            flex: 1;
+        }
+        
+        .video-content h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .video-content p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        /* Admin/Operator Button Styles */
+        .btn-admin {
+            background: linear-gradient(135deg, #6c5ce7 0%, #5758BB 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-outline.accent:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="./logo.png" alt="TheLaundryLounge Logo">
+                <div class="logo-text">TheLaundryLounge</div>
+            </a>
+            <div class="nav-divider"></div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item active">
+                    <a href="laundary.html">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services">
+                        <i class="fas fa-list-check"></i> Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="trackorder.html">
+                        <i class="fas fa-truck"></i> Track Order
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="sdg-goals.html">
+                        <i class="fas fa-leaf"></i> SDG Goals
+                    </a>
+                </li>
+                <li class="nav-item profile-button" style="display: none;">
+                    <a href="profile.html">
+                        <i class="fas fa-user-circle"></i> <span class="user-name">Account</span>
+                    </a>
+                </li>
+                <li class="nav-item logout-button" style="display: none;">
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+                <li class="nav-item signup-button">
+                    <a href="signup.html">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </a>
+                </li>
+                <li class="nav-item login-button">
+                    <a href="login.html">
+                        <i class="fas fa-sign-in-alt"></i> Log In
+                    </a>
+                </li>
+                <li class="nav-item operator-link">
+                    <a href="operator-dashboard.html">
+                        <i class="fas fa-user-cog"></i> Operator
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="video-background">
+            <div class="video-foreground">
+                <iframe src="https://www.youtube.com/embed/8GA18deOsss?autoplay=1&mute=1&loop=1&playlist=8GA18deOsss&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&widgetid=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">Premium Laundry & Dry Cleaning Services</h1>
+            <p class="hero-subtitle">Experience spotless clothes with our professional laundry services. We pick up, clean, and deliver right to your doorstep.</p>
+            <div class="hero-buttons">
+                <a href="neworder.html" class="btn btn-primary btn-lg" onclick="location.href='neworder.html'">
+                    <i class="fas fa-tshirt"></i> Schedule Pickup
+                </a>
+                <a href="#services" class="btn btn-outline btn-lg" onclick="document.getElementById('services').scrollIntoView({behavior: 'smooth'})">
+                    <i class="fas fa-info-circle"></i> Our Services
+                </a>
+            </div>
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <i class="fas fa-clock"></i>
+                    <span>24/7 Service</span>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-truck"></i>
+                    <span>Free Delivery</span>
+                </div>
+                <div class="hero-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>100% Guaranteed</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#ffffff" fill-opacity="1" d="M0,192L48,186.7C96,181,192,171,288,165.3C384,160,480,160,576,170.7C672,181,768,203,864,192C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+    
+    <!-- Features Section (Why Choose Us) -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-heading">Why Choose TheLaundryLounge</h2>
+            <p class="section-subheading">We deliver exceptional laundry services with attention to detail and customer satisfaction as our top priorities.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tshirt"></i>
+        </div>
+                    <h3 class="feature-title">Expert Cleaners</h3>
+                    <p class="feature-description">Our team of skilled professionals ensures your garments receive the best care and treatment.</p>
+    </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-dollar-sign"></i>
+            </div>
+                    <h3 class="feature-title">Affordable Pricing</h3>
+                    <p class="feature-description">Quality laundry services at competitive prices with transparent pricing and no hidden fees.</p>
+            </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+            </div>
+                    <h3 class="feature-title">Express Delivery</h3>
+                    <p class="feature-description">Fast turnaround times with same-day and next-day delivery options available.</p>
+            </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-check-circle"></i>
+        </div>
+                    <h3 class="feature-title">Quality Guarantee</h3>
+                    <p class="feature-description">We stand behind our work with a 100% satisfaction guarantee on all services.</p>
+    </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Image Slider Section -->
+    <section class="image-slider-section">
+        <div class="container">
+            <div class="image-slider">
+                <button class="slider-btn prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-btn next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="slider-track">
+                    <div class="slider-item">
+                        <img src="https://images.unsplash.com/photo-1517677129300-07b130802f46?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Modern Laundry Facility">
+                    </div>
+                    <div class="slider-item">
+                        <img src="https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Professional Dry Cleaning">
+                    </div>
+                    <div class="slider-item">
+                        <img src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Folded Laundry">
+                    </div>
+                </div>
+                
+                <div class="slider-dots">
+                    <div class="slider-dot active"></div>
+                    <div class="slider-dot"></div>
+                    <div class="slider-dot"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+        <div class="container">
+            <h2 class="section-heading">How It Works</h2>
+            <p class="section-subheading">Our simple 4-step process makes laundry day a breeze. Schedule, relax, and receive freshly cleaned clothes.</p>
+            
+            <div class="steps">
+                <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3500/3500833.png" alt="Schedule">
+                </div>
+                <h3 class="step-title">Schedule</h3>
+                    <p class="step-description">Book your laundry pickup online or via our mobile app</p>
+            </div>
+                
+                <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2830/2830312.png" alt="Pickup">
+                </div>
+                <h3 class="step-title">Pickup</h3>
+                    <p class="step-description">We collect your laundry from your doorstep</p>
+            </div>
+                
+                <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2421/2421991.png" alt="Clean">
+                </div>
+                <h3 class="step-title">Cleaning</h3>
+                    <p class="step-description">Your clothes are professionally cleaned by our experts</p>
+            </div>
+                
+                <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2438/2438078.png" alt="Delivery">
+                </div>
+                <h3 class="step-title">Delivery</h3>
+                    <p class="step-description">Clean clothes delivered back to your doorstep</p>
+            </div>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <h2 class="section-heading">See How We Work</h2>
+            <p class="section-subheading">Take a behind-the-scenes look at our professional laundry and dry cleaning process.</p>
+            
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/8GA18deOsss" title="Professional Laundry Services" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-content">
+                    <h3>Our Professional Process</h3>
+                    <p>At TheLaundryLounge, we take pride in our meticulous cleaning process that ensures your garments receive the best care possible. Our team of experts uses state-of-the-art technology and eco-friendly cleaning solutions to deliver exceptional results every time.</p>
+                    <p>From sorting and pre-treating stains to gentle washing, careful drying, and expert finishing touches, we handle every step with the utmost care and attention to detail.</p>
+                    <a href="#services" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Explore Our Services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <h2 class="section-heading">Our Premium Services</h2>
+            <p class="section-subheading">We offer a complete range of laundry and dry cleaning services to meet all your needs with the highest quality standards.</p>
+            
+            <div class="services-container">
+                <!-- Service 1 -->
+                <div class="service-row">
+                    <div class="service-content">
+                        <h3 class="service-title">Wash & Fold</h3>
+                        <p class="service-description">Our signature wash and fold service saves you time and ensures your everyday clothes are cleaned to perfection. We sort, wash, dry, and neatly fold your garments with expert care.</p>
+                        <div class="service-features">
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Separated by colors and fabric types</span>
+            </div>
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Eco-friendly detergents available</span>
+            </div>
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Professionally folded and packaged</span>
+            </div>
+                        </div>
+                        <a href="neworder.html" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Get Started
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1517677129300-07b130802f46?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Wash & Fold">
+                    </div>
+            </div>
+    
+                <!-- Service 2 -->
+                <div class="service-row">
+                    <div class="service-content">
+                        <h3 class="service-title">Dry Cleaning</h3>
+                        <p class="service-description">Our expert dry cleaning service ensures your delicate and special garments receive the care they deserve. From suits and dresses to silk and wool items, we handle them with precision.</p>
+                        <div class="service-features">
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Stain removal specialists</span>
+                            </div>
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Gentle cleaning for delicate fabrics</span>
+                            </div>
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Careful pressing and finishing</span>
+                            </div>
+                        </div>
+                        <a href="neworder.html" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Get Started
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Dry Cleaning">
+                    </div>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="service-row">
+                    <div class="service-content">
+                        <h3 class="service-title">Business & Uniforms</h3>
+                        <p class="service-description">We provide specialized cleaning services for businesses, including uniforms, linens, and commercial textiles. Our reliable service helps maintain your professional image.</p>
+                        <div class="service-features">
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Customized business accounts</span>
+                            </div>
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Regular pickup and delivery schedules</span>
+                            </div>
+                            <div class="service-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Volume discounts available</span>
+                            </div>
+                        </div>
+                        <a href="neworder.html" class="btn btn-primary">
+                            <i class="fas fa-arrow-right"></i> Get Started
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Business & Uniforms">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-heading">What Our Customers Say</h2>
+            <p class="section-subheading">Don't just take our word for it - hear what our satisfied customers have to say about our services.</p>
+            
+            <div class="testimonial-slider">
+                <div class="testimonial-track" id="testimonialTrack">
+                    <div class="testimonial-card">
+                        <div class="quote-icon">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p class="testimonial-text">TheLaundryLounge has completely changed my laundry routine. Their service is fast, reliable and my clothes come back perfectly clean every time!</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Hardik Bhardwaj">
+                            <div class="author-info">
+                                <h4>Hardik Bhardwaj</h4>
+                                <p>Regular Customer</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="quote-icon">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p class="testimonial-text">I've tried several laundry services, but TheLaundryLounge stands out for their attention to detail and exceptional customer service. Highly recommended!</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="Gaurav Paul">
+                            <div class="author-info">
+                                <h4>Gaurav Paul</h4>
+                                <p>Loyal Customer</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="quote-icon">
+                            <i class="fas fa-quote-left"></i>
+                        </div>
+                        <p class="testimonial-text">The convenience of scheduling pickups through their app and having my clean clothes delivered to my door has made my life so much easier!</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/76.jpg" alt="Isthpreet Singh">
+                            <div class="author-info">
+                                <h4>Isthpreet Singh</h4>
+                                <p>Business Customer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-controls">
+                <button class="testimonial-btn prev" id="prevTestimonial">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="testimonial-dots" id="testimonialDots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+                <button class="testimonial-btn next" id="nextTestimonial">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+        </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="stats" id="stats">
+        <div class="container">
+            <div class="stats-overlay"></div>
+            <div class="stats-content">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+     </div>
+                        <h3 class="stat-number" data-count="949">0</h3>
+                        <p class="stat-label">Happy Clients</p>
+        </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-tie"></i>
+        </div>
+                        <h3 class="stat-number" data-count="185">0</h3>
+                        <p class="stat-label">Team Members</p>
+        </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-tshirt"></i>
+        </div>
+                        <h3 class="stat-number" data-count="15840">0</h3>
+                        <p class="stat-label">Orders Completed</p>
+    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-thumbs-up"></i>
+        </div>
+                        <h3 class="stat-number" data-count="4200">0</h3>
+                        <p class="stat-label">5-Star Reviews</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- App Promo Section -->
+    <section class="app-promo" id="app">
+        <div class="container">
+            <div class="app-promo-container">
+                <div class="app-promo-content">
+            <h2>Download Our Mobile App</h2>
+                    <p>Experience the convenience of scheduling pickups, tracking orders, and managing your laundry needs on the go with our easy-to-use mobile app.</p>
+                    <div class="app-features">
+                        <div class="app-feature">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Schedule Pickups Anytime</span>
+                        </div>
+                        <div class="app-feature">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Real-time Order Tracking</span>
+                        </div>
+                        <div class="app-feature">
+                            <i class="fas fa-tag"></i>
+                            <span>Exclusive Mobile Discounts</span>
+                        </div>
+                    </div>
+            <div class="app-buttons">
+                <a href="#" class="app-btn">
+                    <i class="fab fa-apple"></i>
+                            <div>
+                                <span class="small-text">Download on the</span>
+                                <span class="big-text">App Store</span>
+                            </div>
+                </a>
+                <a href="#" class="app-btn">
+                    <i class="fab fa-google-play"></i>
+                            <div>
+                                <span class="small-text">GET IT ON</span>
+                                <span class="big-text">Google Play</span>
+                            </div>
+                </a>
+            </div>
+        </div>
+                <div class="app-promo-image">
+                    <img src="https://img.freepik.com/free-vector/laundry-mobile-app-design_23-2148651530.jpg?w=740&h=580" alt="TheLaundryLounge Mobile App">
+    </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer Section -->
+    <footer class="footer" id="footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-info">
+                        <a href="#" class="footer-logo">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2975/2975175.png" alt="TheLaundryLounge Logo">
+                            <span>TheLaundryLounge</span>
+                        </a>
+                        <p>Premium laundry and dry cleaning services that provide convenience, quality, and satisfaction to our valued customers.</p>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+    </div>
+    
+                    <div class="footer-links">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Home</a></li>
+                            <li><a href="#services"><i class="fas fa-angle-right"></i> Services</a></li>
+                            <li><a href="#how-it-works"><i class="fas fa-angle-right"></i> How It Works</a></li>
+                            <li><a href="#app"><i class="fas fa-angle-right"></i> Our App</a></li>
+                            <li><a href="operator-dashboard.html"><i class="fas fa-angle-right"></i> Operator Dashboard</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <h3>Services</h3>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Wash & Fold</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Dry Cleaning</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Ironing</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Business Services</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right"></i> Special Garments</a></li>
+                        </ul>
+        </div>
+                    
+                    <div class="footer-contact">
+                        <h3>Contact Us</h3>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <p>123 Clean Street, Laundry District, City</p>
+            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <p>+1 (555) 123-4567</p>
+        </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <p>info@thelaundrylounge.com</p>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-clock"></i>
+                                <p>Mon-Sat: 8:00 AM - 8:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2025 TheLaundryLounge. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Operator Login Modal -->
+    <div id="operatorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="operator-login">
+                <div class="login-header">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2975/2975175.png" alt="TheLaundryLounge Logo">
+                    <h2>Operator Login</h2>
+                </div>
+                <form id="operatorLoginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+                </form>
+                <div class="login-footer">
+                    <p>For operator access only. If you're a customer, please use the <a href="thelaundrylounge-login.html">customer login</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Button -->
+    <button class="chat-btn" id="chatBtn">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <script src="js/laundrypopup.js"></script>
+    <script src="/users.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking authentication state');
+            
+            // Set active navigation item based on current page
+            function setActiveNavItem() {
+                const currentPath = window.location.pathname;
+                const navItems = document.querySelectorAll('.nav-item');
+                
+                navItems.forEach(item => {
+                    const link = item.querySelector('a');
+                    if (!link) return;
+                    
+                    const href = link.getAttribute('href');
+                    if (!href) return;
+                    
+                    // Remove all active classes first
+                    item.classList.remove('active');
+                    
+                    // Check if this is the current page
+                    if (currentPath.endsWith(href) || 
+                        (currentPath.endsWith('/') && href === 'index.html') ||
+                        (currentPath.endsWith('laundary.html') && href === 'index.html')) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            
+            // Call function to set active nav item
+            setActiveNavItem();
+            
+            // Function to update UI based on authentication state
+            function updateUI() {
+                console.log('Updating UI based on auth state');
+                let isAuthenticated = false;
+                let userData = null;
+                
+                // Check for SimpleAuth first
+                if (typeof SimpleAuth !== 'undefined') {
+                    console.log('Using SimpleAuth to update UI');
+                    isAuthenticated = SimpleAuth.isLoggedIn();
+                    userData = SimpleAuth.getCurrentUser();
+                    console.log('SimpleAuth auth state:', isAuthenticated);
+                    if (userData) console.log('User:', userData.firstName);
+                } else {
+                    // Fall back to local storage check
+                    console.log('SimpleAuth not available, checking localStorage');
+                    const authToken = localStorage.getItem('authToken');
+                    const userJson = localStorage.getItem('currentUser');
+                    
+                    if (authToken && userJson) {
+                        try {
+                            userData = JSON.parse(userJson);
+                            isAuthenticated = true;
+                            console.log('Found user in localStorage:', userData.firstName);
+                        } catch (e) {
+                            console.error('Error parsing user data:', e);
+                        }
+                    }
+                }
+                
+                // Update login/logout buttons
+                const loginButtons = document.querySelectorAll('.login-button, .signin-button');
+                const signupButtons = document.querySelectorAll('.signup-button');
+                const logoutButtons = document.querySelectorAll('.logout-button, .signout-button');
+                const profileButtons = document.querySelectorAll('.profile-button, .account-button');
+                const userNameElements = document.querySelectorAll('.user-name');
+                
+                console.log('Elements found:', {
+                    loginButtons: loginButtons.length,
+                    logoutButtons: logoutButtons.length,
+                    profileButtons: profileButtons.length,
+                    userNameElements: userNameElements.length
+                });
+                
+                // Update login buttons
+                loginButtons.forEach(button => {
+                    button.style.display = isAuthenticated ? 'none' : '';
+                });
+                
+                // Update signup buttons
+                signupButtons.forEach(button => {
+                    button.style.display = isAuthenticated ? 'none' : '';
+                });
+                
+                // Update logout buttons
+                logoutButtons.forEach(button => {
+                    button.style.display = isAuthenticated ? '' : 'none';
+                    
+                    // Add logout event listener
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        console.log('Logout clicked');
+                        
+                        // Try SimpleAuth logout
+                        if (typeof SimpleAuth !== 'undefined') {
+                            SimpleAuth.logout();
+                        }
+                        
+                        // Clear localStorage
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('currentUser');
+                        
+                        // Reload page
+                        window.location.reload();
+                    });
+                });
+                
+                // Update profile buttons
+                profileButtons.forEach(button => {
+                    button.style.display = isAuthenticated ? '' : 'none';
+                });
+                
+                // Update user name display
+                if (isAuthenticated && userData) {
+                    userNameElements.forEach(element => {
+                        element.textContent = userData.firstName || 'Account';
+                    });
+                }
+            }
+            
+            // Set up navigation toggle for mobile menu
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                    menuToggle.classList.toggle('active');
+                });
+            }
+            
+            // Close mobile menu when clicking a link
+            const navItems = document.querySelectorAll('.nav-item a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Add scroll event listener for header style changes
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+            
+            // Update UI on load
+            updateUI();
+            
+            // Also check if UserManager is available as fallback
+            if (typeof UserManager !== 'undefined') {
+                console.log('Using UserManager to update UI');
+                UserManager.updateProtectedElements();
+            }
+        });
+    </script>
+</body>
+</html>

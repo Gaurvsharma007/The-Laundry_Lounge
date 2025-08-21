@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Demo User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            text-align: center;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #3dbdbd;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #3dbdbd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #299f9f;
+        }
+        .success-message {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reset Demo User</h1>
+    
+    <p>Click the button below to reset the demo user account.</p>
+    <p>This will create a new demo user with the following credentials:</p>
+    <p><strong>Email:</strong> demo@example.com<br><strong>Password:</strong> password</p>
+    
+    <button id="resetButton">Reset Demo User</button>
+    
+    <div id="successMessage" class="success-message">
+        <p><strong>Success!</strong> The demo user has been reset.</p>
+        <p>You can now go to <a href="simple-login.html">the login page</a> and sign in with:</p>
+        <p><strong>Email:</strong> demo@example.com<br><strong>Password:</strong> password</p>
+    </div>
+    
+    <script>
+        document.getElementById('resetButton').addEventListener('click', function() {
+            // Same hashing function as used in SimpleAuth.js
+            function hashPassword(password) {
+                let hash = 0;
+                for (let i = 0; i < password.length; i++) {
+                    const char = password.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                return hash.toString(16);
+            }
+            
+            // Create the hashed password for 'password'
+            const hashedPassword = hashPassword('password');
+            console.log('Hashed password:', hashedPassword);
+            
+            // Clear existing users
+            localStorage.removeItem('laundryUsers');
+            
+            // Create demo user
+            const demoUser = {
+                id: '1',
+                firstName: 'Demo',
+                lastName: 'User',
+                email: 'demo@example.com',
+                phone: '1234567890',
+                password: hashedPassword, // Using the same hashing function
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('laundryUsers', JSON.stringify([demoUser]));
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            console.log('Demo user reset complete!');
+            console.log('You can now login with:');
+            console.log('Email: demo@example.com');
+            console.log('Password: password');
+        });
+    </script>
+</body>
+</html> 
